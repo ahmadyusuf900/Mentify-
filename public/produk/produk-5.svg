@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF9EBB"/><stop offset="1" stop-color="#d6567f"/></linearGradient></defs>
+<rect width="800" height="600" fill="url(#b)"/><circle cx="660" cy="110" r="140" fill="#fff" opacity=".12"/><circle cx="120" cy="520" r="160" fill="#fff" opacity=".1"/>
+<path d="M90 90l8 18 18 8-18 8-8 18-8-18-18-8 18-8z" fill="#FFD84D"/><path d="M700 470l6 14 14 6-14 6-6 14-6-14-14-6 14-6z" fill="#fff" opacity=".9"/>
+<g transform="translate(400 280) scale(1.5)"><path d="M0-100c78 0 116 48 106 96-8 38-38 28-58 28-22 0-22 28-4 42 14 20-8 34-44 34-68 0-116-48-116-106 0-58 48-94 116-94z" fill="#fff"/><circle cx="-50" cy="-40" r="15" fill="#FF8A65"/><circle cx="8" cy="-60" r="15" fill="#FFD84D"/><circle cx="58" cy="-26" r="15" fill="#6FD3A8"/><circle cx="-66" cy="18" r="15" fill="#7DA7D9"/></g>
+<rect x="40" y="520" width="164" height="44" rx="22" fill="#2F4860" opacity=".85"/><text x="122" y="550" text-anchor="middle" font-family="Poppins,Arial,sans-serif" font-weight="700" font-size="22" fill="#fff">PSD + AI</text></svg>

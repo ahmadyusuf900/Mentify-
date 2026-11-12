@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
+import Logo from "./Logo";
 import { useUser } from "@/lib/auth";
 
 const LINKS = [["/mentor", "Mentor"], ["/lomba", "Info Lomba"], ["/marketplace", "Marketplace"]];
@@ -30,7 +31,7 @@ export default function Navbar() {
       {open && <div className="nav-overlay" onClick={() => setOpen(false)} aria-hidden="true" />}
       <header className="nav">
         <div className="container">
-          <Link href="/" className="logo" aria-label="Mentify, kembali ke beranda" onClick={() => setOpen(false)}>Menti<span>fy</span></Link>
+          <Logo href="/" onClick={() => setOpen(false)} />
           <Suspense fallback={<Links />}><ActiveLinks open={open} onClose={() => setOpen(false)} /></Suspense>
           <div className="row">
             <ThemeToggle />

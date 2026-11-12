@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "./Logo";
 import { ADMIN_WA } from "@/data/mentors";
 
 const SOCIALS = [
@@ -12,7 +13,7 @@ export default function Footer() {
     <footer className="sitefooter">
       <div className="container sf-grid">
         <div className="sf-brand">
-          <span className="logo">Menti<span>fy</span></span>
+          <Logo />
           <p>Platform mentor lomba mahasiswa, info lomba terbaru, dan marketplace materi juara dalam satu akun.</p>
           <div className="sf-social">
             {SOCIALS.map(([name, url]) => (

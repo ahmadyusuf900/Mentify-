@@ -14,7 +14,7 @@ export default function ProductCard({ p, free = false }) {
       <div className="pc-body">
         <h3>{p.title}</h3>
         <p className="muted">oleh {p.seller}</p>
-        <p className="muted">⭐ {p.rating} ({p.reviewCount}) · {p.sold} terjual</p>
+        <p className="muted">{p.reviewCount ? `⭐ ${p.rating} (${p.reviewCount})` : "🆕 Baru"} · {p.sold} terjual {p.status === "pending" && <span className="nbadge">⏳ Menunggu review</span>}</p>
         <div className="pc-price">
           <span className="price">{rupiah(p.price)}</span>
           {p.oldPrice > 0 && <s className="muted">{rupiah(p.oldPrice)}</s>}

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { mentors, mentorCategories, mentorCampuses } from "@/data/mentors";
+import { mentorCategories, mentorCampuses } from "@/data/mentors";
+import { useCatalog } from "@/lib/listings";
 import MentorCard from "@/components/MentorCard";
 import MentorMarquee from "@/components/MentorMarquee";
 import Empty from "@/components/Empty";
@@ -9,6 +10,7 @@ import PageHero from "@/components/PageHero";
 const PRICES = { murah: [0, 64999], sedang: [65000, 79999], tinggi: [80000, Infinity] };
 
 export default function MentorPage() {
+  const { mentors } = useCatalog();
   const [f, setF] = useState({ q: "", cat: "", campus: "", price: "", rating: "", top: false, weekend: false, english: false, sort: "rating" });
   const [shown, setShown] = useState(8);
   const set = (k, v) => { setF({ ...f, [k]: v }); setShown(8); };
@@ -26,6 +28,8 @@ export default function MentorPage() {
       );
     })
     .sort((a, b) =>
+      // urutan default: mentor yang baru mendaftar tampil di atas
+      (f.sort === "rating" && !!b.isNew !== !!a.isNew) ? (b.isNew ? 1 : -1) :
       f.sort === "murah" ? a.price - b.price : f.sort === "mahal" ? b.price - a.price :
       f.sort === "sesi" ? b.sessions - a.sessions : b.rating - a.rating);
 

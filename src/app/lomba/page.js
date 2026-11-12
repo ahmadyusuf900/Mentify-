@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { lomba, lombaTypes, lombaLevels, lombaProvinces, isClosed } from "@/data/lomba";
+import { lombaTypes, lombaLevels, lombaProvinces, isClosed } from "@/data/lomba";
 import { useNow } from "@/lib/useNow";
+import { useCatalog } from "@/lib/listings";
 import LombaCard from "@/components/LombaCard";
 import HotMarquee from "@/components/HotMarquee";
 import Empty from "@/components/Empty";
@@ -9,6 +10,7 @@ import PageHero from "@/components/PageHero";
 
 export default function LombaPage() {
   const now = useNow();
+  const { lomba } = useCatalog();
   const [f, setF] = useState({ q: "", level: "", prov: "", cat: "", status: "", pay: "", online: false, sort: "deadline" });
   const [shown, setShown] = useState(9);
   const set = (k, v) => { setF({ ...f, [k]: v }); setShown(9); };

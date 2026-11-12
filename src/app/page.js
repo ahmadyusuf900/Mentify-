@@ -5,7 +5,7 @@ import { products, FREE_QUOTA } from "@/data/products";
 import VideoProfile from "@/components/VideoProfile";
 import Stats from "@/components/landing/Stats";
 import Explorer from "@/components/landing/Explorer";
-import RoleTabs from "@/components/landing/RoleTabs";
+import WhyMentify from "@/components/landing/WhyMentify";
 import ShowcaseTabs from "@/components/landing/ShowcaseTabs";
 import PromoBanner from "@/components/landing/PromoBanner";
 
@@ -22,18 +22,6 @@ const ADV = [
   ["🛟", "Ada tempat bertanya saat bermasalah", "Jika sesi atau pembayaran tidak sesuai kesepakatan, kontak admin Mentify tersedia di halaman pemesanan."],
   ["📚", "Materi dari para juara", `Akun premium mendapat kuota ${FREE_QUOTA} produk gratis tiap bulan, akun free membayar per produk.`],
   ["⏱️", "Status lomba selalu terbarui", "Buka atau tutupnya pendaftaran dihitung otomatis dari tenggat, jadi kamu tidak mendaftar ke lomba yang sudah lewat."],
-];
-
-const TILES = [
-  ["bt-sky", "", "/mentor", "Cari mentor yang pas", "Filter berdasarkan jenis lomba, kampus, harga, rating, dan ketersediaan akhir pekan.",
-    [{ t: "Esai/LKTI" }, { t: "UI/UX" }, { t: "Debat" }, { t: "Rating 4,8+", c: "pink" }]],
-  ["bt-white", "", "/mentor", "Pesan sesi tanpa ribet", "Pilih durasi, tanggal, jam, dan metode pembayaran dalam satu alur.",
-    [{ t: "60 menit" }, { t: "Google Meet" }, { t: "QRIS", c: "pink" }]],
-  ["bt-white", "s2", "/lomba", "Info lomba terbaru", "Status buka atau tutup otomatis, lengkap dengan hitungan hari.",
-    [{ t: "H-3", c: "pink" }, { t: "Tutup", c: "gray" }]],
-  ["bt-cream", "s2", "/marketplace", "Marketplace materi juara", "Esai juara, template, dan materi persiapan yang siap diunduh.", []],
-  ["bt-white", "s2", "/dashboard", "Dashboard satu akun", "Daftar jadi mentor, tambah info lomba, dan jual produk dari satu tempat.", []],
-  ["bt-navy", "s6", "/marketplace", "Premium: produk gratis tiap bulan", `Akun premium mendapat kuota ${FREE_QUOTA} produk digital gratis per bulan. Akun free membayar per produk.`, []],
 ];
 
 const FAQ = [
@@ -145,34 +133,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Fitur */}
-      <section className="band">
-        <div className="container">
-          <div className="lp-head">
-            <span className="eyebrow">Fitur</span>
-            <h2>Semua yang kamu butuhkan untuk siap lomba</h2>
-          </div>
-          <div className="bento">
-            {TILES.map(([tone, span, href, title, desc, demo]) => (
-              <Link key={title} href={href} className={`bt ${tone} ${span}`}>
-                <h3>{title}</h3>
-                <p className="muted">{desc}</p>
-                {demo.length > 0 && <div className="demo-row">{demo.map((d) => <span key={d.t} className={`badge ${d.c || ""}`}>{d.t}</span>)}</div>}
-                <span className="bt-go">Coba sekarang →</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Solusi per peran */}
+      {/* Keluhan + solusi (slide otomatis) */}
       <section className="band band-sky">
         <div className="container">
           <div className="lp-head">
-            <span className="eyebrow">Solusi</span>
-            <h2>Apa yang Mentify tawarkan untukmu</h2>
+            <span className="eyebrow">Apa yang Mentify tawarkan untukmu</span>
+            <h2>Semua yang kamu butuhkan untuk siap lomba</h2>
+            <p className="muted">Keluhan yang sering kita alami saat mau ikut lomba, dan bagaimana Mentify membantunya.</p>
           </div>
-          <RoleTabs />
+          <WhyMentify />
         </div>
       </section>
 

@@ -3,7 +3,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { mentors, mentorCategories, priceFor } from "@/data/mentors";
 import { lomba, isClosed, daysLeft, fmtDate, feeText } from "@/data/lomba";
-import { products } from "@/data/products";
+import { products, productLombaTypes } from "@/data/products";
+import { lombaTypes } from "@/data/lomba";
+import { catMeta, CATEGORY_ORDER } from "@/data/categories";
 import { rupiah } from "@/lib/format";
 import { useNow } from "@/lib/useNow";
 import MentorAvatar from "@/components/MentorAvatar";
@@ -25,9 +27,15 @@ function Card({ label, media, badges, title, sub, meta, href, cta, empty = false
   );
 }
 
+const VISIBLE = 6; // jumlah chip yang tampil sebelum "Lihat lebih banyak lomba"
+const ALL = [...new Set([...mentorCategories, ...lombaTypes, ...productLombaTypes])]
+  .sort((a, b) => (CATEGORY_ORDER.indexOf(a) + 100) % 100 - (CATEGORY_ORDER.indexOf(b) + 100) % 100);
+
 export default function Explorer() {
   const now = useNow();
-  const [cat, setCat] = useState(mentorCategories[0]);
+  const [cat, setCat] = useState(ALL[0]);
+  const [more, setMore] = useState(false);
+  const shown = more ? ALL : ALL.slice(0, VISIBLE);
 
   const m = mentors.filter((x) => x.category === cat).sort((a, b) => b.rating - a.rating)[0];
   const l = lomba.filter((x) => x.type === cat)
@@ -39,10 +47,25 @@ export default function Explorer() {
   return (
     <>
       <div className="xp-chips" role="group" aria-label="Pilih jenis lomba">
-        {mentorCategories.map((c) => (
-          <button key={c} type="button" className={`chip ${cat === c ? "on" : ""}`} aria-pressed={cat === c} onClick={() => setCat(c)}>{c}</button>
-        ))}
+        {shown.map((c) => {
+          const [icon, c1, c2] = catMeta(c);
+          const n = lomba.filter((x) => x.type === c).length;
+          return (
+            <button key={c} type="button" className={`xc ${cat === c ? "on" : ""}`} aria-pressed={cat === c}
+              style={{ "--c1": c1, "--c2": c2 }} onClick={() => setCat(c)}>
+              <span className="xc-ico" aria-hidden="true">{icon}</span>
+              <span className="xc-txt"><strong>{c}</strong><small>{n} lomba</small></span>
+            </button>
+          );
+        })}
       </div>
+      {ALL.length > VISIBLE && (
+        <div className="xp-more">
+          <button type="button" className="btn secondary" onClick={() => setMore(!more)} aria-expanded={more}>
+            {more ? "Tampilkan lebih sedikit ▲" : `Lihat lebih banyak lomba (+${ALL.length - VISIBLE}) ▼`}
+          </button>
+        </div>
+      )}
 
       <div className="xp-grid" key={cat}>
         {m ? (

@@ -26,7 +26,7 @@ const rows = [
  ["Joko Santoso","Universitas Negeri Yogyakarta","Pendidikan Seni Rupa",2023,"Poster/Desain Grafis",50000,4.4,"Juara 3 Poster Kampanye Nasional 2025",[3,4,6]],
 ];
 
-const CAT = {
+export const CAT = {
  "Esai/LKTI": { tags: ["Struktur esai", "Riset & sitasi", "Review naskah"], help: ["Review dan revisi naskah", "Brainstorming ide dan judul", "Persiapan presentasi finalis"] },
  "Karya Tulis Ilmiah": { tags: ["Metodologi", "Statistik dasar", "Penulisan ilmiah"], help: ["Merancang metodologi penelitian", "Review naskah dan daftar pustaka", "Simulasi tanya jawab juri"] },
  "Business Case": { tags: ["Analisis pasar", "Framework", "Pitch deck"], help: ["Menyusun framework solusi", "Review slide dan alur presentasi", "Simulasi presentasi dan Q&A"] },
@@ -44,7 +44,7 @@ const POOL = [
 
 export const mentors = rows.map(([name, campus, major, year, category, price, rating, highlight, days], i) => ({
   id: i + 1, name, campus, major, year, category, price, rating, highlight, days,
-  photo: null, // ganti "/mentor/nama.jpg" (taruh di public/mentor)
+  photo: `/mentor/mentor-${i + 1}.svg`, // GANTI FOTO: taruh file di public/mentor lalu ubah path ini (mis. "/mentor/alya.jpg"), atau timpa file dengan nama sama
   code: `MTF-26-${String(i + 1).padStart(3, "0")}`,
   joined: i % 3 === 0 ? "Januari 2026" : "Maret 2026",
   tags: CAT[category].tags, help: CAT[category].help,
@@ -59,6 +59,22 @@ export const mentors = rows.map(([name, campus, major, year, category, price, ra
     date: ["2 Nov 2026", "28 Okt 2026", "19 Okt 2026"][k],
   })),
 }));
+
+// Dipanggil dari dashboard mentor. f: {name, campus, major, category, price, highlight, photo, owner}
+export function makeMentor(f, id) {
+  const c = CAT[f.category] || { tags: [f.category, "Review karya", "Strategi lomba"], help: ["Review karya dan strategi", "Brainstorming ide", "Simulasi presentasi"] };
+  const hl = f.highlight || `Mentor baru bidang ${f.category}`;
+  return {
+    id, name: f.name, campus: f.campus, major: f.major, year: new Date().getFullYear() - 2, category: f.category,
+    price: Number(f.price), rating: 0, highlight: hl, days: [1, 3, 6], photo: f.photo || null,
+    code: `MTF-26-${id}`, joined: "November 2026", tags: c.tags, help: c.help,
+    bio: `Mahasiswa ${f.major} ${f.campus}. ${hl}. Siap mendampingi persiapan lomba ${f.category.toLowerCase()} dengan feedback yang jujur dan praktis.`,
+    languages: ["Indonesia"], slots: ["09:00", "11:00", "13:00", "15:00", "19:00", "20:30"],
+    sessions: 0, students: 0, reviewCount: 0, response: "< 24 jam", achievements: [hl],
+    docs: [["KTM mahasiswa aktif", "Menunggu verifikasi"], ["Sertifikat lomba", "Menunggu verifikasi"], ["CV", "Menunggu verifikasi"]],
+    reviews: [], status: "pending", owner: f.owner, isNew: true,
+  };
+}
 
 export const mentorCategories = [...new Set(rows.map((r) => r[4]))];
 export const mentorCampuses = [...new Set(rows.map((r) => r[1]))];

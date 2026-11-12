@@ -1,17 +1,25 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { products, FREE_QUOTA, PRODUCT_FEE, PROMO } from "@/data/products";
-import { mentors, PAYMENTS, ADMIN_WA } from "@/data/mentors";
+import { FREE_QUOTA, PRODUCT_FEE, PROMO } from "@/data/products";
+import { PAYMENTS, ADMIN_WA } from "@/data/mentors";
 import { rupiah } from "@/lib/format";
 import { useUser } from "@/lib/auth";
 import { useQuota } from "@/lib/quota";
+import { addOrder } from "@/lib/orders";
+import { useCatalog } from "@/lib/listings";
+import { useReviews, mergeRating } from "@/lib/reviews";
+import PaymentCard from "./PaymentCard";
+import ReviewBox from "./ReviewBox";
 import ProductCover from "./ProductCover";
 import ProductCard from "./ProductCard";
 
 const TABS = [["desk", "Deskripsi"], ["isi", "Isi produk"], ["ulasan", "Ulasan"]];
 
 export default function ProductDetail({ id }) {
+  const { products, mentors, ready } = useCatalog();
+  const { mine } = useReviews("produk", id);
+  const [stage, setStage] = useState("form");
   const p = products.find((x) => x.id === Number(id));
   const { user } = useUser();
   const { ids, left, claim } = useQuota();
@@ -24,9 +32,8 @@ export default function ProductDetail({ id }) {
   const [payKey, setPayKey] = useState("QRIS");
   const [paySub, setPaySub] = useState("");
   const [agree, setAgree] = useState(false);
-  const [done, setDone] = useState(null);
 
-  if (!p) return <div className="container section">Produk tidak ditemukan. <Link href="/marketplace"><u>Kembali</u></Link></div>;
+  if (!p) return !ready ? <div className="container section muted">Memuat produk…</div> : <div className="container section">Produk tidak ditemukan. <Link href="/marketplace"><u>Kembali</u></Link></div>;
 
   const seller = mentors.find((m) => m.name === p.seller);
   const premium = user?.plan === "premium";
@@ -46,10 +53,18 @@ export default function ProductDetail({ id }) {
     setPromoOk(ok);
     setPromoMsg(ok ? `Kode berlaku, diskon ${PROMO.pct}%.` : "Kode tidak valid.");
   };
+  const methodStr = useQuotaNow ? "Kuota premium" : `${payKey}${paySub ? ` – ${paySub}` : ""}`;
+  const items = useQuotaNow
+    ? [{ label: p.title, amount: 0 }]
+    : [{ label: p.title, amount: p.price }, ...(discount ? [{ label: `Diskon promo ${PROMO.pct}%`, amount: -discount }] : []), { label: "Biaya layanan", amount: PRODUCT_FEE }];
   const submit = () => {
     if (useQuotaNow) claim(p.id);
-    setDone({ code: `INV-${p.id}${Date.now().toString().slice(-5)}`, free: useQuotaNow });
+    return addOrder({
+      kind: useQuotaNow ? "kuota" : "produk", title: p.title, detail: `${p.category} · ${p.format} · oleh ${p.seller}`,
+      items, method: methodStr, ref: `/marketplace/${p.id}`, target: { type: "produk", id: p.id, name: p.title },
+    });
   };
+  const pr = mergeRating(p.rating, p.reviewCount, mine);
 
   const rows = [
     ["Penjual", p.seller], ["Format", p.format], ["Ukuran file", p.size],
@@ -74,7 +89,7 @@ export default function ProductDetail({ id }) {
             {rows.map(([k, v]) => <div key={k}><dt className="muted">{k}</dt><dd>{v}</dd></div>)}
           </dl>
           <div className="idc-stats">
-            <div><strong>⭐ {p.rating}</strong><span>{p.reviewCount} ulasan</span></div>
+            <div><strong>{pr.count ? `⭐ ${pr.rating}` : "🆕 Baru"}</strong><span>{pr.count} ulasan</span></div>
             <div><strong>{p.sold}</strong><span>terjual</span></div>
             <div><strong>{p.pages}</strong><span>halaman</span></div>
           </div>
@@ -110,9 +125,10 @@ export default function ProductDetail({ id }) {
               </>)}
 
               {tab === "ulasan" && (<>
-                <div className="rate-sum"><strong>⭐ {p.rating}</strong><span className="muted">dari {p.reviewCount} ulasan</span></div>
-                {p.reviews.map((r, i) => (
-                  <div key={i} className="rv">
+                <div className="rate-sum"><strong>{pr.count ? `⭐ ${pr.rating}` : "🆕 Produk baru"}</strong><span className="muted">dari {pr.count} ulasan</span></div>
+                {pr.count === 0 && <p className="muted">Belum ada ulasan. Beli lalu beri ulasan dari Riwayat.</p>}
+                {[...mine, ...p.reviews].map((r, i) => (
+                  <div key={i} className={`rv ${r.mine ? "mine" : ""}`}>
                     <div className="row between"><strong>{r.by}</strong><span className="muted">{r.date}</span></div>
                     <span>{"⭐".repeat(r.stars)}</span><p className="muted">{r.text}</p>
                   </div>
@@ -125,20 +141,27 @@ export default function ProductDetail({ id }) {
           <section className="card order" id="checkout">
             <h2>Checkout</h2>
 
-            {done || claimed ? (
+            {stage === "pay" ? (
+              <PaymentCard
+                title={p.title} detail={`${p.category} · ${p.format} · oleh ${p.seller}`}
+                items={items} method={methodStr} onBack={() => setStage("form")} onPay={submit}
+                success={{
+                  title: useQuotaNow || items.every((i) => i.amount === 0) ? "Akses dibuka" : "Pembayaran berhasil",
+                  note: "File sudah bisa diunduh dan dikirim ke email kamu. Bagaimana produknya? Beri ulasan agar membantu pembeli lain.",
+                  actions: (o) => (<>
+                    <button className="btn secondary">⬇️ Unduh file</button>
+                    <a className="btn secondary" href={ADMIN_WA.url} target="_blank" rel="noopener noreferrer">Hubungi admin</a>
+                    <div style={{ flexBasis: "100%" }}><ReviewBox order={o} /></div>
+                  </>),
+                }}
+              />
+            ) : claimed ? (
               <div className="ostep">
-                <p className="badge pink" style={{ justifySelf: "start" }}>{done?.free || claimed ? "Akses dibuka" : "Pesanan diterima"}</p>
-                <h3>{done ? `Kode ${done.code}` : "Produk ini sudah kamu klaim"}</h3>
-                <div className="summary">
-                  <div><span>Produk</span><strong>{p.title}</strong></div>
-                  <div><span>Format</span><strong>{p.format} · {p.size}</strong></div>
-                  <div className="total"><span>Total dibayar</span><span>{rupiah(done ? done.free ? 0 : total : 0)}</span></div>
-                </div>
-                <div className="row">
-                  <button className="btn">Unduh file</button>
-                  <a className="btn secondary" href={ADMIN_WA.url} target="_blank" rel="noopener noreferrer">Hubungi admin</a>
-                </div>
-                <p className="muted">Simulasi: belum ada transaksi atau file nyata.</p>
+                <p className="badge pink" style={{ justifySelf: "start" }}>Akses dibuka</p>
+                <h3>Produk ini sudah kamu klaim</h3>
+                <div className="row"><button className="btn">Unduh file</button>
+                  <Link className="btn secondary" href="/dashboard?tab=riwayat">🗂️ Riwayat &amp; ulasan</Link></div>
+                <p className="muted">Simulasi: belum ada file nyata.</p>
               </div>
             ) : (
               <>
@@ -202,8 +225,8 @@ export default function ProductDetail({ id }) {
                 <label className="agree"><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                   <span>Saya menyetujui syarat dan ketentuan pembelian produk digital.</span></label>
 
-                <button className="btn" disabled={!canSubmit} onClick={submit}>
-                  {useQuotaNow ? "Buka akses gratis" : `Bayar ${rupiah(total)}`}
+                <button className="btn" disabled={!canSubmit} onClick={() => setStage("pay")}>
+                  {useQuotaNow ? "Lanjut: buka akses gratis" : `Lanjut ke pembayaran · ${rupiah(total)}`}
                 </button>
               </>
             )}

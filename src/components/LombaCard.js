@@ -9,6 +9,7 @@ export default function LombaCard({ l, now }) {
     <Link href={`/lomba/${l.id}`} className={`card lomba-card ${closed ? "closed" : ""}`}>
       <div className="poster-box">
         <Poster l={l} closed={closed} />
+        {l.status === "pending" && <span className="nbadge corner" style={{ left: 8, right: "auto" }}>⏳ Menunggu review</span>}
         {!closed && d !== null && d <= 14 && <span className="badge pink corner">H-{d}</span>}
       </div>
       <h3>{l.title}</h3>

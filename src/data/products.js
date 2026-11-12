@@ -39,15 +39,23 @@ const POOL = [
  ["Budi", "Penjelasannya runtut, cocok untuk pemula."],
 ];
 
-export const products = rows.map(([title, category, price, oldPrice, seller, rating, reviewCount, sold, format, pages, size, lombaType], i) => ({
+function build([title, category, price, oldPrice, seller, rating, reviewCount, sold, format, pages, size, lombaType], i, extra = {}) { return ({
   id: i + 1, title, category, price, oldPrice, seller, rating, reviewCount, sold, format, pages, size, lombaType,
-  cover: null, // ganti "/produk/nama.jpg" (taruh di public/produk)
+  cover: `/produk/produk-${i + 1}.svg`, // GANTI SAMPUL: taruh file di public/produk lalu ubah path ini (mis. "/produk/esai-lkti.jpg"), atau timpa file dengan nama sama
   code: `PRD-26-${String(i + 1).padStart(3, "0")}`,
   icon: CAT[category].icon, includes: CAT[category].includes, who: CAT[category].who,
   updated: "Oktober 2026", lang: "Indonesia",
   desc: `${title} disusun oleh ${seller}, mentor Mentify yang berpengalaman di lomba ${lombaType}. Materi ini dirancang agar kamu bisa langsung mempraktikkannya, mulai dari memahami standar penilaian sampai menyiapkan karya yang siap dikirim.`,
   reviews: [0, 1, 2].map((k) => ({ by: POOL[(i + k) % 4][0], stars: k === 2 ? 4 : 5, text: POOL[(i + k) % 4][1], date: ["5 Nov 2026", "30 Okt 2026", "21 Okt 2026"][k] })),
-}));
+  ...extra,
+}); }
+export const products = rows.map((r, i) => build(r, i));
+
+// Dipanggil dari dashboard penjual. f: {title, category, price, format, lombaType, desc, cover, seller, owner}
+export function makeProduct(f, id) {
+  const row = [f.title, f.category, Number(f.price) || 0, 0, f.seller, 0, 0, 0, f.format || "PDF", Number(f.pages) || 10, f.size || "—", f.lombaType];
+  return build(row, id - 1, { id, cover: f.cover || null, ...(f.desc ? { desc: f.desc } : {}), reviews: [], status: "pending", owner: f.owner, isNew: true, code: `PRD-26-${id}`, updated: "November 2026" });
+}
 
 export const productCategories = [...new Set(rows.map((r) => r[1]))];
 export const productIcons = Object.fromEntries(Object.entries(CAT).map(([k, v]) => [k, v.icon]));

@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { products, productCategories, productIcons, productLombaTypes, FREE_QUOTA } from "@/data/products";
+import { productCategories, productIcons, productLombaTypes, FREE_QUOTA } from "@/data/products";
 import { useUser } from "@/lib/auth";
+import { useCatalog } from "@/lib/listings";
 import { useQuota } from "@/lib/quota";
 import ProductCard from "@/components/ProductCard";
 import Empty from "@/components/Empty";
@@ -12,6 +13,7 @@ const PRICES = { a: [0, 29999], b: [30000, 44999], c: [45000, Infinity] };
 const INIT = { q: "", cat: "", price: "", rating: "", lomba: "", promo: false, sort: "laris" };
 
 export default function Marketplace() {
+  const { products } = useCatalog();
   const { user } = useUser();
   const { left } = useQuota();
   const premium = user?.plan === "premium";
@@ -31,6 +33,8 @@ export default function Marketplace() {
       );
     })
     .sort((a, b) =>
+      // urutan default: produk baru tampil di atas
+      (f.sort === "laris" && !!b.isNew !== !!a.isNew) ? (b.isNew ? 1 : -1) :
       f.sort === "murah" ? a.price - b.price : f.sort === "mahal" ? b.price - a.price :
       f.sort === "rating" ? b.rating - a.rating : b.sold - a.sold);
 

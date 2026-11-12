@@ -16,7 +16,7 @@ export default function MentorMarquee({ items }) {
               <MentorAvatar m={m} size="sm" />
               <span className="mq-text">
                 <strong>{m.name}</strong>
-                <span className="muted">⭐ {m.rating} · {m.category}</span>
+                <span className="muted">{m.reviewCount ? `⭐ ${m.rating}` : "🆕 Baru"} · {m.category}</span>
                 <span className="muted">Mulai {rupiah(priceFor(m, 60))}</span>
               </span>
             </Link>

@@ -1,9 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { mentors, DAYS, DURATIONS, FORMATS, PAYMENTS, ADMIN_WA, ADMIN_FEE, priceFor } from "@/data/mentors";
+import { DAYS, DURATIONS, FORMATS, PAYMENTS, ADMIN_WA, ADMIN_FEE, priceFor } from "@/data/mentors";
 import { rupiah } from "@/lib/format";
 import { useNow } from "@/lib/useNow";
+import { addOrder } from "@/lib/orders";
+import { useCatalog } from "@/lib/listings";
+import { useReviews, mergeRating } from "@/lib/reviews";
+import PaymentCard from "./PaymentCard";
 import MentorAvatar from "./MentorAvatar";
 import MentorCard from "./MentorCard";
 
@@ -12,7 +16,10 @@ const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0
 
 export default function MentorBooking({ id }) {
   const now = useNow();
+  const { mentors, ready } = useCatalog();
+  const { mine } = useReviews("mentor", id);
   const m = mentors.find((x) => x.id === Number(id));
+  const [stage, setStage] = useState("form");
   const [tab, setTab] = useState("tentang");
   const [dur, setDur] = useState(60);
   const [date, setDate] = useState("");
@@ -22,7 +29,6 @@ export default function MentorBooking({ id }) {
   const [paySub, setPaySub] = useState("");
   const [note, setNote] = useState("");
   const [agree, setAgree] = useState(false);
-  const [done, setDone] = useState(null);
 
   // 10 tanggal terdekat yang sesuai hari tersedia mentor
   const dates = useMemo(() => {
@@ -36,7 +42,7 @@ export default function MentorBooking({ id }) {
     return out;
   }, [now, m]);
 
-  if (!m) return <div className="container section">Mentor tidak ditemukan. <Link href="/mentor"><u>Kembali</u></Link></div>;
+  if (!m) return !ready ? <div className="container section muted">Memuat profil mentor…</div> : <div className="container section">Mentor tidak ditemukan. <Link href="/mentor"><u>Kembali</u></Link></div>;
 
   const pay = PAYMENTS.find((p) => p.key === payKey);
   const price = priceFor(m, dur);
@@ -47,8 +53,15 @@ export default function MentorBooking({ id }) {
   const canSubmit = date && slot && agree && (!pay.sub || paySub);
   const related = mentors.filter((x) => x.category === m.category && x.id !== m.id).slice(0, 4);
 
-  const submit = () => setDone({ code: `ORD-${m.id}${Date.now().toString().slice(-5)}` });
-  const reset = () => { setDone(null); setDate(""); setSlot(""); setAgree(false); setNote(""); };
+  const methodStr = `${payKey}${paySub ? ` – ${paySub}` : ""}`;
+  const mr = mergeRating(m.rating, m.reviewCount, mine);
+  const submit = () => addOrder({
+    kind: "booking", title: `Sesi mentoring dengan ${m.name}`,
+    detail: `${m.category} · ${dateLabel}, ${slot} WIB · ${dur} menit · ${fmt}`,
+    items: [{ label: `Sesi ${dur} menit`, amount: price }, { label: "Biaya layanan", amount: ADMIN_FEE }],
+    method: methodStr, ref: `/mentor/${m.id}`, target: { type: "mentor", id: m.id, name: m.name },
+  });
+  const reset = () => { setStage("form"); setDate(""); setSlot(""); setAgree(false); setNote(""); };
 
   const rows = [
     ["Kampus", m.campus], ["Jurusan", m.major], ["Angkatan", m.year],
@@ -67,13 +80,13 @@ export default function MentorBooking({ id }) {
           <h1 className="idc-name">{m.name}</h1>
           <div className="row" style={{ justifyContent: "center" }}>
             <span className="badge pink">Mentor {m.category}</span>
-            <span className="badge">✔ Terverifikasi</span>
+            {m.status === "pending" ? <span className="nbadge">⏳ Menunggu verifikasi</span> : <span className="badge">✔ Terverifikasi</span>}
           </div>
           <dl className="idc-rows">
             {rows.map(([k, v]) => <div key={k}><dt className="muted">{k}</dt><dd>{v}</dd></div>)}
           </dl>
           <div className="idc-stats">
-            <div><strong>⭐ {m.rating}</strong><span>{m.reviewCount} ulasan</span></div>
+            <div><strong>{mr.count ? `⭐ ${mr.rating}` : "🆕 Baru"}</strong><span>{mr.count} ulasan</span></div>
             <div><strong>{m.sessions}</strong><span>sesi</span></div>
             <div><strong>{m.students}</strong><span>mentee</span></div>
           </div>
@@ -127,9 +140,10 @@ export default function MentorBooking({ id }) {
               </>)}
 
               {tab === "ulasan" && (<>
-                <div className="rate-sum"><strong>⭐ {m.rating}</strong><span className="muted">dari {m.reviewCount} ulasan</span></div>
-                {m.reviews.map((r, i) => (
-                  <div key={i} className="rv">
+                <div className="rate-sum"><strong>{mr.count ? `⭐ ${mr.rating}` : "🆕 Mentor baru"}</strong><span className="muted">dari {mr.count} ulasan</span></div>
+                {mr.count === 0 && <p className="muted">Belum ada ulasan. Jadilah yang pertama setelah sesi.</p>}
+                {[...mine, ...m.reviews].map((r, i) => (
+                  <div key={i} className={`rv ${r.mine ? "mine" : ""}`}>
                     <div className="row between"><strong>{r.by}</strong><span className="muted">{r.date}</span></div>
                     <span>{"⭐".repeat(r.stars)}</span><p className="muted">{r.text}</p>
                   </div>
@@ -142,22 +156,22 @@ export default function MentorBooking({ id }) {
           <section className="card order" id="pesan">
             <h2>Pesan sesi dengan {m.name.split(" ")[0]}</h2>
 
-            {done ? (
-              <div className="ostep">
-                <p className="badge pink" style={{ justifySelf: "start" }}>Pesanan diterima</p>
-                <h3>Kode pesanan {done.code}</h3>
-                <div className="summary">
-                  <div><span>Jadwal</span><strong>{dateLabel}, {slot} WIB</strong></div>
-                  <div><span>Durasi & format</span><strong>{dur} menit · {fmt}</strong></div>
-                  <div><span>Pembayaran</span><strong>{payKey}{paySub ? ` – ${paySub}` : ""}</strong></div>
-                  <div className="total"><span>Total</span><span>{rupiah(total)}</span></div>
-                </div>
-                <p className="muted">Selesaikan pembayaran, lalu tautan sesi dikirim ke email kamu. (Simulasi, belum ada transaksi nyata.)</p>
-                <div className="row">
-                  <button className="btn secondary" onClick={reset}>Pesan sesi lain</button>
-                  <a className="btn" href={ADMIN_WA.url} target="_blank" rel="noopener noreferrer">Hubungi admin</a>
-                </div>
-              </div>
+            {stage === "pay" ? (
+              <PaymentCard
+                title={`Sesi mentoring dengan ${m.name}`}
+                detail={`${m.category} · ${dateLabel}, ${slot} WIB · ${dur} menit · ${fmt}`}
+                items={[{ label: `Sesi ${dur} menit`, amount: price }, { label: "Biaya layanan", amount: ADMIN_FEE }]}
+                method={methodStr} onBack={() => setStage("form")} onPay={submit}
+                success={{
+                  title: "Pembayaran berhasil — booking diterima",
+                  note: "Mentor akan mengonfirmasi jadwal, lalu tautan sesi dikirim ke email kamu. Setelah sesi selesai, kamu bisa memberi ulasan di Riwayat.",
+                  actions: () => (<>
+                    <Link className="btn secondary" href="/dashboard?tab=riwayat">🗂️ Lihat riwayat</Link>
+                    <button className="btn secondary" onClick={reset}>Pesan sesi lain</button>
+                    <a className="btn secondary" href={ADMIN_WA.url} target="_blank" rel="noopener noreferrer">Hubungi admin</a>
+                  </>),
+                }}
+              />
             ) : (
               <>
                 <div className="ostep"><h4>1. Pilih durasi</h4>
@@ -215,7 +229,7 @@ export default function MentorBooking({ id }) {
                 <label className="agree"><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                   <span>Saya menyetujui syarat dan ketentuan serta kebijakan penjadwalan ulang.</span></label>
 
-                <button className="btn" disabled={!canSubmit} onClick={submit}>Pesan & bayar {rupiah(total)}</button>
+                <button className="btn" disabled={!canSubmit} onClick={() => setStage("pay")}>Lanjut ke pembayaran · {rupiah(total)}</button>
               </>
             )}
           </section>

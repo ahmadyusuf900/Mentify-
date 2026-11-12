@@ -11,7 +11,7 @@ const Sparkle = ({ x, y, c = W, s = 1, cls = "fl" }) => (
 );
 
 /* Karakter chibi: titik (0,0) = telapak kaki. Tinggi ±210 */
-function Chibi({ x, y, s = 1, hair, outfit, accent = W, skin = SK, style = "spiky", flip = false, wave = false, item }) {
+export function Chibi({ x, y, s = 1, hair, outfit, accent = W, skin = SK, style = "spiky", flip = false, wave = false, item }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${flip ? -s : s} ${s})`}>
       <ellipse cx="0" cy="2" rx="46" ry="8" fill="#000" opacity=".14" />

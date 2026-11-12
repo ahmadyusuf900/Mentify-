@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { lomba, isClosed, daysLeft, fmtDate, feeText } from "@/data/lomba";
+import { isClosed, daysLeft, fmtDate, feeText } from "@/data/lomba";
 import { useNow } from "@/lib/useNow";
+import { useCatalog } from "@/lib/listings";
 import Poster from "./Poster";
 import LombaCard from "./LombaCard";
 
@@ -17,6 +18,7 @@ const MEDALS = ["🥇", "🥈", "🥉", "📜"];
 
 export default function LombaDetail({ id }) {
   const now = useNow();
+  const { lomba, ready } = useCatalog();
   const l = lomba.find((x) => x.id === Number(id));
   const [tab, setTab] = useState("tentang");
   const [liked, setLiked] = useState(false);
@@ -25,7 +27,7 @@ export default function LombaDetail({ id }) {
   if (!l) {
     return (
       <div className="container section">
-        Lomba tidak ditemukan. <Link href="/lomba"><u>Kembali</u></Link>
+        {ready ? <>Lomba tidak ditemukan. <Link href="/lomba"><u>Kembali</u></Link></> : <span className="muted">Memuat info lomba…</span>}
       </div>
     );
   }
