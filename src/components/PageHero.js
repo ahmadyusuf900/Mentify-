@@ -4,7 +4,7 @@ const TAG = { mentor: "Mentor lomba", lomba: "Info lomba", market: "Marketplace"
 
 export default function PageHero({ theme, title, sub, children }) {
   return (
-    <section className="phero">
+    <section className={`phero phero-${theme}`}>
       <HeroArt theme={theme} />
       <div className="phero-shade" aria-hidden="true" />
       <div className="container">

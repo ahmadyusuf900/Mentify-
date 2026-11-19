@@ -10,6 +10,7 @@ import { useReviews, mergeRating } from "@/lib/reviews";
 import PaymentCard from "./PaymentCard";
 import MentorAvatar from "./MentorAvatar";
 import MentorCard from "./MentorCard";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const TABS = [["tentang", "Tentang"], ["prestasi", "Prestasi"], ["cv", "CV & verifikasi"], ["ulasan", "Ulasan"]];
 const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -80,13 +81,13 @@ export default function MentorBooking({ id }) {
           <h1 className="idc-name">{m.name}</h1>
           <div className="row" style={{ justifyContent: "center" }}>
             <span className="badge pink">Mentor {m.category}</span>
-            {m.status === "pending" ? <span className="nbadge">⏳ Menunggu verifikasi</span> : <span className="badge">✔ Terverifikasi</span>}
+            {m.status === "pending" ? <span className="nbadge"><Em e="⏳" /> Menunggu verifikasi</span> : <span className="badge">✔ Terverifikasi</span>}
           </div>
           <dl className="idc-rows">
             {rows.map(([k, v]) => <div key={k}><dt className="muted">{k}</dt><dd>{v}</dd></div>)}
           </dl>
           <div className="idc-stats">
-            <div><strong>{mr.count ? `⭐ ${mr.rating}` : "🆕 Baru"}</strong><span>{mr.count} ulasan</span></div>
+            <div><strong>{mr.count ? <><Em e="⭐" /> {mr.rating}</> : <><Em e="🆕" /> Baru</>}</strong><span>{mr.count} ulasan</span></div>
             <div><strong>{m.sessions}</strong><span>sesi</span></div>
             <div><strong>{m.students}</strong><span>mentee</span></div>
           </div>
@@ -110,13 +111,13 @@ export default function MentorBooking({ id }) {
                 <h4 className="sub">Keahlian</h4>
                 <div className="row">{m.tags.map((t) => <span key={t} className="badge">{t}</span>)}</div>
                 <h4 className="sub">Yang bisa dibantu</h4>
-                <ul className="check-grid">{m.help.map((h) => <li key={h}><span aria-hidden="true">✔</span>{h}</li>)}</ul>
+                <ul className="check-grid">{m.help.map((h) => <li key={h}><span aria-hidden="true"><Icon name="check" /></span>{h}</li>)}</ul>
                 <h4 className="sub">Format sesi</h4>
                 <p className="muted">Online via {FORMATS.join(", ")}. Jadwal tersedia: {m.days.map((d) => DAYS[d]).join(", ")}.</p>
               </>)}
 
               {tab === "prestasi" && (<>
-                <ul className="check-grid">{m.achievements.map((a) => <li key={a}><span aria-hidden="true">🏆</span>{a}</li>)}</ul>
+                <ul className="check-grid">{m.achievements.map((a) => <li key={a}><span aria-hidden="true"><Em e="🏆" /></span>{a}</li>)}</ul>
                 <h4 className="sub">Pendidikan</h4>
                 <p>{m.major}, {m.campus} (angkatan {m.year})</p>
               </>)}
@@ -131,7 +132,7 @@ export default function MentorBooking({ id }) {
                 </div>
                 <h4 className="sub">Dokumen terverifikasi</h4>
                 <ul className="check-grid">
-                  {m.docs.map(([d, s]) => <li key={d}><span aria-hidden="true">✔</span><span>{d}<br /><span className="badge">{s}</span></span></li>)}
+                  {m.docs.map(([d, s]) => <li key={d}><span aria-hidden="true"><Icon name="check" /></span><span>{d}<br /><span className="badge">{s}</span></span></li>)}
                 </ul>
                 <p style={{ marginTop: 12 }}>
                   <button className="btn secondary" disabled>Unduh CV lengkap (PDF)</button>
@@ -140,12 +141,12 @@ export default function MentorBooking({ id }) {
               </>)}
 
               {tab === "ulasan" && (<>
-                <div className="rate-sum"><strong>{mr.count ? `⭐ ${mr.rating}` : "🆕 Mentor baru"}</strong><span className="muted">dari {mr.count} ulasan</span></div>
+                <div className="rate-sum"><strong>{mr.count ? <><Em e="⭐" /> {mr.rating}</> : <><Em e="🆕" /> Mentor baru</>}</strong><span className="muted">dari {mr.count} ulasan</span></div>
                 {mr.count === 0 && <p className="muted">Belum ada ulasan. Jadilah yang pertama setelah sesi.</p>}
                 {[...mine, ...m.reviews].map((r, i) => (
                   <div key={i} className={`rv ${r.mine ? "mine" : ""}`}>
                     <div className="row between"><strong>{r.by}</strong><span className="muted">{r.date}</span></div>
-                    <span>{"⭐".repeat(r.stars)}</span><p className="muted">{r.text}</p>
+                    <span><Stars n={r.stars} /></span><p className="muted">{r.text}</p>
                   </div>
                 ))}
               </>)}
@@ -166,7 +167,7 @@ export default function MentorBooking({ id }) {
                   title: "Pembayaran berhasil — booking diterima",
                   note: "Mentor akan mengonfirmasi jadwal, lalu tautan sesi dikirim ke email kamu. Setelah sesi selesai, kamu bisa memberi ulasan di Riwayat.",
                   actions: () => (<>
-                    <Link className="btn secondary" href="/dashboard?tab=riwayat">🗂️ Lihat riwayat</Link>
+                    <Link className="btn secondary" href="/dashboard?tab=riwayat"><Em e="🗂️" /> Lihat riwayat</Link>
                     <button className="btn secondary" onClick={reset}>Pesan sesi lain</button>
                     <a className="btn secondary" href={ADMIN_WA.url} target="_blank" rel="noopener noreferrer">Hubungi admin</a>
                   </>),
@@ -220,7 +221,7 @@ export default function MentorBooking({ id }) {
                 </div>
 
                 <div className="warn" role="note">
-                  <span aria-hidden="true">⚠️</span>
+                  <span aria-hidden="true"><Em e="⚠️" /></span>
                   <span>Jika terjadi hal yang tidak sesuai kesepakatan (mentor tidak hadir, jadwal diubah sepihak, atau kendala pembayaran),
                     segera hubungi admin Mentify di <a href={ADMIN_WA.url} target="_blank" rel="noopener noreferrer"><strong>WhatsApp {ADMIN_WA.label}</strong></a>.
                     Sebaiknya lakukan seluruh pembayaran dan komunikasi lewat Mentify agar kamu terlindungi.</span>

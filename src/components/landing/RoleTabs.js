@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const ROLES = [
   { key: "mentee", tab: "Pencari mentor", title: "Dapat arahan dari yang pernah menang",
@@ -44,7 +45,7 @@ export default function RoleTabs() {
         <p className="rt-problem"><strong>Tantangannya:</strong> {r.problem}</p>
         <h4 className="sub" style={{ margin: 0 }}>Solusi di Mentify</h4>
         <ul className="check-grid">
-          {r.points.map((p) => <li key={p}><span aria-hidden="true">✔</span>{p}</li>)}
+          {r.points.map((p) => <li key={p}><span aria-hidden="true"><Icon name="check" /></span>{p}</li>)}
         </ul>
         <div><Link className="btn" href={r.cta[0]}>{r.cta[1]}</Link></div>
       </div>

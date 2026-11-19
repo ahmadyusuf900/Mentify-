@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Poster from "./Poster";
 import { isClosed } from "@/data/lomba";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 // Daftar diduplikasi supaya putarannya tidak terputus.
 // Salinan kedua disembunyikan dari pembaca layar dan dari tombol Tab.
@@ -20,7 +21,7 @@ export default function HotMarquee({ items, now }) {
             >
               <Poster l={l} closed={isClosed(l, now)} />
               <span className="hot-title">{l.title}</span>
-              <span className="muted">👁 {l.views.toLocaleString("id-ID")}</span>
+              <span className="muted"><Em e="👁" /> {l.views.toLocaleString("id-ID")}</span>
             </Link>
           );
         })}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { findOrder, KINDS } from "@/lib/orders";
 import { rupiah } from "@/lib/format";
 import Logo from "@/components/Logo";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 export default function Invoice() {
   const [o, setO] = useState(undefined);
@@ -22,7 +23,7 @@ export default function Invoice() {
     <div className="container section inv-page">
       <div className="inv-actions no-print">
         <Link className="btn secondary" href="/dashboard?tab=riwayat">← Riwayat</Link>
-        <button className="btn" onClick={() => window.print()}>🖨️ Cetak / simpan PDF</button>
+        <button className="btn" onClick={() => window.print()}><Em e="🖨️" /> Cetak / simpan PDF</button>
       </div>
       <article className="invoice">
         <header className="inv-head">

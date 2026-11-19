@@ -2,6 +2,7 @@ import Link from "next/link";
 import MentorAvatar from "./MentorAvatar";
 import { priceFor } from "@/data/mentors";
 import { rupiah } from "@/lib/format";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 // Daftar diduplikasi agar putarannya tidak terputus; salinan kedua disembunyikan dari pembaca layar.
 export default function MentorMarquee({ items }) {
@@ -16,7 +17,7 @@ export default function MentorMarquee({ items }) {
               <MentorAvatar m={m} size="sm" />
               <span className="mq-text">
                 <strong>{m.name}</strong>
-                <span className="muted">{m.reviewCount ? `⭐ ${m.rating}` : "🆕 Baru"} · {m.category}</span>
+                <span className="muted">{m.reviewCount ? <><Em e="⭐" /> {m.rating}</> : <><Em e="🆕" /> Baru</>} · {m.category}</span>
                 <span className="muted">Mulai {rupiah(priceFor(m, 60))}</span>
               </span>
             </Link>

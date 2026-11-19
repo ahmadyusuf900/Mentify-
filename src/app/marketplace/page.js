@@ -8,6 +8,7 @@ import { useQuota } from "@/lib/quota";
 import ProductCard from "@/components/ProductCard";
 import Empty from "@/components/Empty";
 import PageHero from "@/components/PageHero";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const PRICES = { a: [0, 29999], b: [30000, 44999], c: [45000, Infinity] };
 const INIT = { q: "", cat: "", price: "", rating: "", lomba: "", promo: false, sort: "laris" };
@@ -60,7 +61,7 @@ export default function Marketplace() {
       <div className="container section">
         <div className="mk-banner">
           {premium ? (
-            <span>⭐ <strong>Akun premium:</strong> sisa kuota akses gratis bulan ini {left} dari {FREE_QUOTA} produk.</span>
+            <span><Em e="⭐" /> <strong>Akun premium:</strong> sisa kuota akses gratis bulan ini {left} dari {FREE_QUOTA} produk.</span>
           ) : (
             <span>Akun <strong>premium</strong> bisa mengakses {FREE_QUOTA} produk gratis tiap bulan. <Link href="/login"><u>Masuk atau upgrade</u></Link></span>
           )}

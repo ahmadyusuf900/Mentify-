@@ -5,6 +5,7 @@ import { rupiah } from "@/lib/format";
 import { nextInvoiceNo } from "@/lib/orders";
 import { useUser } from "@/lib/auth";
 import { PAYMENTS } from "@/data/mentors";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const hash = (str) => { let h = 2166136261; for (const c of str) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
 
@@ -74,7 +75,7 @@ export default function PaymentCard({ title, detail, items, method, onBack, onPa
   return (
     <div className={`paycard ${stage}`} aria-live="polite">
       <div className="pc-head">
-        <span className="pc-ico" aria-hidden="true">{stage === "paid" ? "✅" : "🧾"}</span>
+        <span className="pc-ico" aria-hidden="true"><Em e={stage === "paid" ? "✅" : "🧾"} /></span>
         <div><strong>{stage === "paid" ? "Bukti pembayaran" : "Invoice pembayaran"}</strong><span className="muted">{info.no}</span></div>
         <span className={`badge ${stage === "paid" ? "pink" : ""}`}>{stage === "review" ? "Menunggu pembayaran" : stage === "processing" ? "Memproses…" : "Berhasil"}</span>
       </div>
@@ -91,7 +92,7 @@ export default function PaymentCard({ title, detail, items, method, onBack, onPa
             <div className="total"><span>Total dibayar</span><span>{rupiah(total)}</span></div>
           </div>
           <div className="row" style={{ gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
-            <Link className="btn" href={`/invoice?id=${order.id}`}>🧾 Lihat invoice</Link>
+            <Link className="btn" href={`/invoice?id=${order.id}`}><Em e="🧾" /> Lihat invoice</Link>
             {success.actions?.(order)}
           </div>
         </div>
@@ -119,7 +120,7 @@ export default function PaymentCard({ title, detail, items, method, onBack, onPa
             </div>
           )}
 
-          <div className="warn"><span aria-hidden="true">⚠️</span><span>Simulasi: tidak ada uang yang benar-benar ditagih. Tombol di bawah mewakili pembayaran yang sudah kamu lakukan.</span></div>
+          <div className="warn"><span aria-hidden="true"><Em e="⚠️" /></span><span>Simulasi: tidak ada uang yang benar-benar ditagih. Tombol di bawah mewakili pembayaran yang sudah kamu lakukan.</span></div>
           <div className="row between" style={{ gap: 8, flexWrap: "wrap" }}>
             {onBack ? <button className="btn secondary" type="button" onClick={onBack} disabled={stage === "processing"}>← Ubah pesanan</button> : <span />}
             <button className="btn" type="button" onClick={pay} disabled={stage === "processing"}>

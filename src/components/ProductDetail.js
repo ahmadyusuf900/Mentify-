@@ -13,6 +13,7 @@ import PaymentCard from "./PaymentCard";
 import ReviewBox from "./ReviewBox";
 import ProductCover from "./ProductCover";
 import ProductCard from "./ProductCard";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const TABS = [["desk", "Deskripsi"], ["isi", "Isi produk"], ["ulasan", "Ulasan"]];
 
@@ -83,13 +84,13 @@ export default function ProductDetail({ id }) {
           <h1 className="idc-name">{p.title}</h1>
           <div className="row" style={{ justifyContent: "center" }}>
             <span className="badge pink">{p.category}</span>
-            <span className="badge">✔ Dari mentor terverifikasi</span>
+            <span className="badge"><Icon name="check" /> Dari mentor terverifikasi</span>
           </div>
           <dl className="idc-rows">
             {rows.map(([k, v]) => <div key={k}><dt className="muted">{k}</dt><dd>{v}</dd></div>)}
           </dl>
           <div className="idc-stats">
-            <div><strong>{pr.count ? `⭐ ${pr.rating}` : "🆕 Baru"}</strong><span>{pr.count} ulasan</span></div>
+            <div><strong>{pr.count ? <><Em e="⭐" /> {pr.rating}</> : <><Em e="🆕" /> Baru</>}</strong><span>{pr.count} ulasan</span></div>
             <div><strong>{p.sold}</strong><span>terjual</span></div>
             <div><strong>{p.pages}</strong><span>halaman</span></div>
           </div>
@@ -113,24 +114,24 @@ export default function ProductDetail({ id }) {
               {tab === "desk" && (<>
                 <p>{p.desc}</p>
                 <h4 className="sub">Cocok untuk</h4>
-                <ul className="check-grid">{p.who.map((w) => <li key={w}><span aria-hidden="true">✔</span>{w}</li>)}</ul>
+                <ul className="check-grid">{p.who.map((w) => <li key={w}><span aria-hidden="true"><Icon name="check" /></span>{w}</li>)}</ul>
                 <h4 className="sub">Penjual</h4>
                 <p>{p.seller}{seller ? <> · {seller.campus} · <Link href={`/mentor/${seller.id}`}><u>Lihat profil mentor</u></Link></> : null}</p>
               </>)}
 
               {tab === "isi" && (<>
-                <ul className="check-grid">{p.includes.map((i) => <li key={i}><span aria-hidden="true">📦</span>{i}</li>)}</ul>
+                <ul className="check-grid">{p.includes.map((i) => <li key={i}><span aria-hidden="true"><Em e="📦" /></span>{i}</li>)}</ul>
                 <h4 className="sub">Setelah pembelian</h4>
                 <p className="muted">File langsung bisa diunduh dari halaman ini dan dikirim ke email kamu. Pembaruan versi berikutnya gratis.</p>
               </>)}
 
               {tab === "ulasan" && (<>
-                <div className="rate-sum"><strong>{pr.count ? `⭐ ${pr.rating}` : "🆕 Produk baru"}</strong><span className="muted">dari {pr.count} ulasan</span></div>
+                <div className="rate-sum"><strong>{pr.count ? <><Em e="⭐" /> {pr.rating}</> : <><Em e="🆕" /> Produk baru</>}</strong><span className="muted">dari {pr.count} ulasan</span></div>
                 {pr.count === 0 && <p className="muted">Belum ada ulasan. Beli lalu beri ulasan dari Riwayat.</p>}
                 {[...mine, ...p.reviews].map((r, i) => (
                   <div key={i} className={`rv ${r.mine ? "mine" : ""}`}>
                     <div className="row between"><strong>{r.by}</strong><span className="muted">{r.date}</span></div>
-                    <span>{"⭐".repeat(r.stars)}</span><p className="muted">{r.text}</p>
+                    <span><Stars n={r.stars} /></span><p className="muted">{r.text}</p>
                   </div>
                 ))}
               </>)}
@@ -160,7 +161,7 @@ export default function ProductDetail({ id }) {
                 <p className="badge pink" style={{ justifySelf: "start" }}>Akses dibuka</p>
                 <h3>Produk ini sudah kamu klaim</h3>
                 <div className="row"><button className="btn">Unduh file</button>
-                  <Link className="btn secondary" href="/dashboard?tab=riwayat">🗂️ Riwayat &amp; ulasan</Link></div>
+                  <Link className="btn secondary" href="/dashboard?tab=riwayat"><Em e="🗂️" /> Riwayat &amp; ulasan</Link></div>
                 <p className="muted">Simulasi: belum ada file nyata.</p>
               </div>
             ) : (
@@ -215,7 +216,7 @@ export default function ProductDetail({ id }) {
                 </div>
 
                 <div className="warn" role="note">
-                  <span aria-hidden="true">⚠️</span>
+                  <span aria-hidden="true"><Em e="⚠️" /></span>
                   <span>Produk digital tidak dapat dikembalikan setelah diunduh, kecuali file rusak atau tidak sesuai deskripsi.
                     Jika ada kendala pembayaran atau file, hubungi admin Mentify di{" "}
                     <a href={ADMIN_WA.url} target="_blank" rel="noopener noreferrer"><strong>WhatsApp {ADMIN_WA.label}</strong></a>.

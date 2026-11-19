@@ -2,42 +2,43 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Chibi } from "@/components/HeroArt";
+import { Icon } from "@/components/Icon";
 
 // Tiap slide = satu keluhan nyata + solusi Mentify. Ubah teks di sini.
 const SLIDES = [
   { role: "Pencari mentor", ac: "#7DA7D9", hair: "#3a2d5c", outfit: "#7DA7D9", style: "long",
     thought: "Mau ikut lomba esai, tapi nggak tahu harus mulai dari mana…",
-    chats: ["Mentornya bisa dipercaya nggak ya? 🤔", "Takut salah pilih 😣"],
+    chats: ["Mentornya bisa dipercaya nggak ya?", "Takut salah pilih"],
     title: "Dapat arahan dari yang pernah juara",
     points: ["Cari mentor by jenis lomba, kampus, harga, dan rating", "Lihat prestasi dan ulasan sebelum memesan", "Booking jadwal dan bayar dalam satu halaman"],
     cta: ["/mentor", "Cari mentor"] },
   { role: "Peserta lomba", ac: "#FF8A65", hair: "#1d2b3a", outfit: "#FF9F7A", style: "spiky",
     thought: "Info lomba nyebar di mana-mana, deadline-nya sering kelewat!",
-    chats: ["Kemarin telat daftar lagi 😭", "Poster di story udah hilang…"],
+    chats: ["Kemarin telat daftar lagi", "Poster di story udah hilang…"],
     title: "Semua info lomba, satu tempat",
     points: ["Status buka/tutup dihitung otomatis dari tenggat", "Filter berdasarkan jenis, jenjang, lokasi, dan biaya", "Poster, hadiah, syarat, dan tautan resmi lengkap"],
     cta: ["/lomba", "Lihat info lomba"] },
   { role: "Pemburu materi", ac: "#6FD3A8", hair: "#c2477a", outfit: "#6FD3A8", style: "twin",
     thought: "Pengen lihat contoh esai juara, tapi nggak ada yang mau share…",
-    chats: ["Template bagus itu mahal banget 💸", "Mau belajar dari yang menang"],
+    chats: ["Template bagus itu mahal banget", "Mau belajar dari yang menang"],
     title: "Materi langsung dari para juara",
     points: ["Esai juara, template, dan materi siap unduh", "Akun premium dapat kuota produk gratis tiap bulan", "Pembayaran QRIS, transfer, dan e-wallet"],
     cta: ["/marketplace", "Buka marketplace"] },
   { role: "Calon mentor", ac: "#B79AE8", hair: "#2b3a67", outfit: "#B79AE8", style: "bun",
     thought: "Aku pernah juara, tapi bingung gimana cara berbagi ilmunya…",
-    chats: ["Pengen nambah uang saku 🙌", "Tapi jadwalnya susah diatur"],
+    chats: ["Pengen nambah uang saku", "Tapi jadwalnya susah diatur"],
     title: "Ubah pengalaman juara jadi penghasilan",
     points: ["Daftar dengan KTM, sertifikat, dan CV lalu diverifikasi", "Atur tarif dan hari tersedia sendiri", "Pantau sesi, pendapatan, dan level di dashboard"],
     cta: ["/login", "Daftar jadi mentor"] },
   { role: "Penyelenggara", ac: "#FFC94D", hair: "#5a3a24", outfit: "#FFD84D", style: "spiky",
     thought: "Lombaku sepi peserta, promosinya susah banget…",
-    chats: ["Udah posting tapi nggak ada yang lihat", "Anggaran promo terbatas 😅"],
+    chats: ["Udah posting tapi nggak ada yang lihat", "Anggaran promo terbatas"],
     title: "Jangkau peserta yang tepat",
     points: ["Pasang info lomba lengkap dengan poster dan jadwal", "Verifikasi penyelenggara agar dipercaya peserta", "Pantau tayangan dan jumlah pendaftar"],
     cta: ["/login", "Pasang info lomba"] },
   { role: "Penjual produk", ac: "#FF9EBB", hair: "#7a3b2e", outfit: "#FF9EBB", style: "long",
     thought: "Punya template bagus, tapi nggak tahu mau dijual di mana…",
-    chats: ["Takut dibajak 😟", "Pembeli susah ditemukan"],
+    chats: ["Takut dibajak", "Pembeli susah ditemukan"],
     title: "Buka lapak digitalmu",
     points: ["Aktivasi toko, lalu tambah katalog sendiri", "Pembeli datang dari komunitas peserta lomba", "Pantau penjualan dan omzet tiap produk"],
     cta: ["/login", "Mulai jualan"] },
@@ -83,7 +84,7 @@ export default function WhyMentify() {
               <div className="wm-card">
                 <span className="wm-eyebrow">Solusi Mentify · {s.role}</span>
                 <h3>{s.title}</h3>
-                <ul>{s.points.map((p) => <li key={p}><span aria-hidden="true">✔</span>{p}</li>)}</ul>
+                <ul>{s.points.map((p) => <li key={p}><span aria-hidden="true"><Icon name="check" /></span>{p}</li>)}</ul>
                 <div><Link className="btn" href={s.cta[0]} tabIndex={i === k ? 0 : -1}>{s.cta[1]}</Link></div>
               </div>
             </article>

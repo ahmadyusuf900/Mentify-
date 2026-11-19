@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { addReview, useReviews } from "@/lib/reviews";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 // Form ulasan: bintang 1–5 + komentar. Dipakai di Riwayat dan layar sukses pembelian produk.
 export default function ReviewBox({ order }) {
@@ -14,12 +15,12 @@ export default function ReviewBox({ order }) {
   if (done) {
     return (
       <div className="rvbox done">
-        <span aria-label={`${done.stars} bintang`}>{"⭐".repeat(done.stars)}</span>
+        <span aria-label={`${done.stars} bintang`}><Stars n={done.stars} /></span>
         <p className="muted">“{done.text}” — ulasanmu sudah tampil di halaman {order.target.type === "mentor" ? "mentor" : "produk"}. Terima kasih!</p>
       </div>
     );
   }
-  if (!open) return <button className="btn secondary hist-btn" onClick={() => setOpen(true)}>⭐ Beri ulasan</button>;
+  if (!open) return <button className="btn secondary hist-btn" onClick={() => setOpen(true)}><Em e="⭐" /> Beri ulasan</button>;
   return (
     <form className="rvbox" onSubmit={(e) => { e.preventDefault(); addReview({ orderId: order.id, type: order.target.type, targetId: order.target.id, rating, text }); setOpen(false); }}>
       <strong>Ulasan untuk {order.target.name}</strong>

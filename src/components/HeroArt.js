@@ -77,20 +77,19 @@ const Defs = ({ id, from, to }) => (
 function MentorScene() {
   return (
     <svg viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      <Defs id="gm" from="#2F4860" to="#7DA7D9" />
+      <Defs id="gm" from="#D5E6FF" to="#BFD4FA" />
       <rect width="1200" height="360" fill="url(#gm)" />
       <circle cx="930" cy="150" r="130" fill="#fff" opacity=".1" />
       <circle cx="1080" cy="60" r="60" fill="#fff" opacity=".08" />
-      <Cloud x="760" y="60" s={.8} /><Cloud x="1100" y="120" s={.6} o={.7} />
       <Sparkle x="700" y="110" c={YL} s={1.4} /><Sparkle x="1130" y="40" s={1} cls="fl2" /><Sparkle x="820" y="200" c={PK} s={1} cls="fl3" />
       {/* papan tulis */}
       <g transform="translate(640 60)">
-        <rect width="190" height="120" rx="10" fill="#244056" stroke="#fff" strokeWidth="5" />
+        <rect width="190" height="120" rx="10" fill="#2F4860" stroke="#fff" strokeWidth="5" />
         <path d="M20 40h90M20 64h140M20 88h70" stroke="#fff" strokeWidth="5" strokeLinecap="round" opacity=".8" />
         <circle cx="150" cy="38" r="12" fill={YL} />
       </g>
       {/* lantai & meja */}
-      <rect y="322" width="1200" height="38" fill="#1f3448" />
+      <rect y="322" width="1200" height="38" fill="#9DB6DA" />
       <rect x="760" y="262" width="300" height="14" rx="7" fill="#fff" />
       <rect x="790" y="276" width="10" height="46" fill="#fff" /><rect x="1020" y="276" width="10" height="46" fill="#fff" />
       <rect x="840" y="232" width="86" height="30" rx="4" fill={MN} /><rect x="934" y="240" width="70" height="22" rx="3" fill={YL} />
@@ -106,7 +105,7 @@ function MentorScene() {
 function LombaScene() {
   return (
     <svg viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      <Defs id="gl" from="#2F4860" to="#7b6fc9" />
+      <Defs id="gl" from="#FFE9B0" to="#FFC9D9" />
       <rect width="1200" height="360" fill="url(#gl)" />
       {[...Array(14)].map((_, i) => (
         <rect key={i} x={600 + i * 46} y={i % 2 ? 0 : 20} width="14" height="14" rx="3"
@@ -121,7 +120,7 @@ function LombaScene() {
         <path d="M45 14l7 15 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z" fill="#fff" opacity=".9" />
       </g>
       {/* podium */}
-      <rect y="322" width="1200" height="38" fill="#2a3b66" />
+      <rect y="322" width="1200" height="38" fill="#E8A9BE" />
       <rect x="700" y="262" width="90" height="60" rx="6" fill="#fff" /><text x="745" y="302" textAnchor="middle" fontSize="30" fontWeight="800" fill={N}>2</text>
       <rect x="800" y="232" width="100" height="90" rx="6" fill={YL} /><text x="850" y="290" textAnchor="middle" fontSize="38" fontWeight="800" fill={N}>1</text>
       <rect x="910" y="282" width="90" height="40" rx="6" fill="#fff" /><text x="955" y="310" textAnchor="middle" fontSize="26" fontWeight="800" fill={N}>3</text>
@@ -142,12 +141,12 @@ function LombaScene() {
 function MarketScene() {
   return (
     <svg viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      <Defs id="gk" from="#2F4860" to="#3fa38a" />
+      <Defs id="gk" from="#D2F5E7" to="#AEE6D2" />
       <rect width="1200" height="360" fill="url(#gk)" />
       <circle cx="960" cy="150" r="140" fill="#fff" opacity=".08" />
       <Sparkle x="690" y="90" c={YL} s={1.3} /><Sparkle x="1130" y="70" s={1} cls="fl2" />
       {/* kios */}
-      <rect y="322" width="1200" height="38" fill="#1f4a46" />
+      <rect y="322" width="1200" height="38" fill="#86C9B4" />
       <g transform="translate(720 90)">
         <path d="M0 40h330l-20-40H20z" fill={PK} />
         {[...Array(6)].map((_, i) => <rect key={i} x={i * 55} y="0" width="27" height="40" fill="#fff" opacity=".9" transform="skewX(0)" />)}

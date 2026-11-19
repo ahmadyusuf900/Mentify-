@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 import Logo from "./Logo";
 import { useUser } from "@/lib/auth";
+import { Icon } from "@/components/Icon";
 
 const LINKS = [["/mentor", "Mentor"], ["/lomba", "Info Lomba"], ["/marketplace", "Marketplace"]];
 
@@ -37,7 +38,7 @@ export default function Navbar() {
             <ThemeToggle />
             <Link className="btn" href={user ? "/dashboard" : "/login"}>{user ? "Dashboard" : "Masuk"}</Link>
             <button className="nav-toggle" onClick={() => setOpen(!open)} aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open}>
-              {open ? "✕" : "☰"}
+              <Icon name={open ? "x" : "menu"} size={22} />
             </button>
           </div>
         </div>

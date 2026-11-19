@@ -2,6 +2,7 @@ import Link from "next/link";
 import MentorAvatar from "./MentorAvatar";
 import { priceRange } from "@/data/mentors";
 import { rupiah } from "@/lib/format";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 export default function MentorCard({ m }) {
   const [lo, hi] = priceRange(m);
@@ -12,7 +13,7 @@ export default function MentorCard({ m }) {
       <div className="mc-body">
         <h3>{m.name}</h3>
         <span className="badge">Mentor {m.category}</span>
-        <p className="muted">{m.reviewCount ? `⭐ ${m.rating} (${m.reviewCount} ulasan)` : "🆕 Mentor baru"} {m.status === "pending" && <span className="nbadge">⏳ Menunggu verifikasi</span>}</p>
+        <p className="muted">{m.reviewCount ? `⭐ ${m.rating} (${m.reviewCount} ulasan)` : "🆕 Mentor baru"} {m.status === "pending" && <span className="nbadge"><Em e="⏳" /> Menunggu verifikasi</span>}</p>
         <p className="price mprice">{rupiah(lo)} – {rupiah(hi)}</p>
         <Link className="btn" href={`/mentor/${m.id}`}>Lihat profil</Link>
       </div>

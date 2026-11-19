@@ -11,6 +11,7 @@ import { useNow } from "@/lib/useNow";
 import MentorAvatar from "@/components/MentorAvatar";
 import Poster from "@/components/Poster";
 import ProductCover from "@/components/ProductCover";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 // Satu kerangka kartu untuk semua jenis, supaya ukuran dan susunannya sama
 function Card({ label, media, badges, title, sub, meta, href, cta, empty = false }) {
@@ -21,7 +22,7 @@ function Card({ label, media, badges, title, sub, meta, href, cta, empty = false
       <div className="xp-badges">{badges}</div>
       <strong className="xp-title">{title}</strong>
       <p className="muted xp-sub">{sub}</p>
-      <p className="muted xp-meta">{meta}</p>
+      <p className="muted xp-meta">{emo(meta)}</p>
       <Link className={`btn xp-btn ${empty ? "secondary" : ""}`} href={href}>{cta}</Link>
     </article>
   );
@@ -53,7 +54,7 @@ export default function Explorer() {
           return (
             <button key={c} type="button" className={`xc ${cat === c ? "on" : ""}`} aria-pressed={cat === c}
               style={{ "--c1": c1, "--c2": c2 }} onClick={() => setCat(c)}>
-              <span className="xc-ico" aria-hidden="true">{icon}</span>
+              <span className="xc-ico" aria-hidden="true"><Em e={icon} /></span>
               <span className="xc-txt"><strong>{c}</strong><small>{n} lomba</small></span>
             </button>
           );

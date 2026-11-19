@@ -2,6 +2,7 @@ import Link from "next/link";
 import { lomba } from "@/data/lomba";
 import { products } from "@/data/products";
 import { mentors } from "@/data/mentors";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 // Banner poster yang bergeser otomatis ke kiri (CSS marquee, berhenti saat di-hover).
 const top = [...mentors].sort((a, b) => b.rating - a.rating)[0];
@@ -20,7 +21,7 @@ export default function PromoBanner() {
       <span className="pb-tag">{b.tag}</span>
       <strong>{b.t}</strong>
       <span className="pb-sub">{b.s}</span>
-      <span className="pb-ico" aria-hidden="true">{b.icon}</span>
+      <span className="pb-ico" aria-hidden="true"><Em e={b.icon} /></span>
     </Link>
   ));
   return (

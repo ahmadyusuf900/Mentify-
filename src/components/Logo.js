@@ -1,14 +1,14 @@
 import Link from "next/link";
 
-// Logo = gambar /public/logo.svg + tulisan. Untuk logo sendiri: timpa public/logo.svg
+// Logo = gambar /public/logo.png (maskot Mentify) + tulisan. Untuk ganti: timpa public/logo.png
 // (atau ubah LOGO_SRC), dan set SHOW_TEXT=false bila gambarmu sudah memuat tulisan "Mentify".
-const LOGO_SRC = "/logo.svg";
+const LOGO_SRC = "/logo.png";
 const SHOW_TEXT = true;
 
 export default function Logo({ href, onClick, label = "Mentify, kembali ke beranda" }) {
   const body = (
     <>
-      <img src={LOGO_SRC} alt="" width="34" height="34" className="logo-img" />
+      <img src={LOGO_SRC} alt="" width="44" height="40" className="logo-img" />
       {SHOW_TEXT && <span className="logo-text">Menti<span>fy</span></span>}
     </>
   );

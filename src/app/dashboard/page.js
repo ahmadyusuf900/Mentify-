@@ -13,6 +13,8 @@ import { readImage } from "@/lib/image";
 import PaymentCard, { MethodPicker } from "@/components/PaymentCard";
 import ReviewBox from "@/components/ReviewBox";
 import { rupiah } from "@/lib/format";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
+import DashShell, { Overview } from "@/components/dash/DashShell";
 
 /* ───────── helpers ───────── */
 function StepIndicator({ steps, current }) {
@@ -33,7 +35,7 @@ function StatusPending({ title, msg, onApprove }) {
   return (
     <div className="card" style={{ gap: 16, maxWidth: 560 }}>
       <div className="row" style={{ gap: 12 }}>
-        <span style={{ fontSize: "2rem" }}>⏳</span>
+        <span style={{ fontSize: "2rem" }}><Em e="⏳" /></span>
         <div>
           <h3 style={{ marginBottom: 2 }}>{title}</h3>
           <p className="muted">{msg}</p>
@@ -54,7 +56,7 @@ function StatusPending({ title, msg, onApprove }) {
       </div>
       {onApprove && (
         <button type="button" className="btn secondary" onClick={onApprove}>
-          🧪 Demo: simulasikan disetujui admin
+          <Em e="🧪" /> Demo: simulasikan disetujui admin
         </button>
       )}
     </div>
@@ -65,7 +67,7 @@ function Bars({ title, unit = "", data, note }) {
   const max = Math.max(...data.map((d) => d[1]), 1);
   return (
     <div className="card" style={{ gap: 10 }}>
-      <h4 style={{ fontFamily: "var(--font-poppins)", fontWeight: 600 }}>{title}</h4>
+      <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>{title}</h4>
       <div className="bars" role="img" aria-label={title}>
         {data.map(([l, v]) => (
           <div className="bar" key={l}>
@@ -93,8 +95,8 @@ function Goal({ label, now, target, fmt = (n) => n }) {
 function StatCard({ icon, label, value }) {
   return (
     <div className="card" style={{ alignItems: "center", textAlign: "center", gap: 4 }}>
-      <span style={{ fontSize: "1.6rem" }}>{icon}</span>
-      <strong style={{ fontSize: "1.5rem", fontFamily: "var(--font-poppins)" }}>{value}</strong>
+      <span style={{ fontSize: "1.6rem" }}><Em e={icon} /></span>
+      <strong style={{ fontSize: "1.5rem", fontFamily: "var(--font-display)" }}>{value}</strong>
       <span className="muted" style={{ fontSize: ".82rem" }}>{label}</span>
     </div>
   );
@@ -121,7 +123,7 @@ function TabCariMentor() {
           { icon: "💬", t: "Chat langsung", d: "Tanya-jawab sebelum booking, tanpa komitmen" },
         ].map((f) => (
           <div key={f.t} className="card" style={{ gap: 6 }}>
-            <span style={{ fontSize: "1.5rem" }}>{f.icon}</span>
+            <span style={{ fontSize: "1.5rem" }}><Em e={f.icon} /></span>
             <strong style={{ fontSize: ".95rem" }}>{f.t}</strong>
             <p className="muted" style={{ fontSize: ".85rem" }}>{f.d}</p>
           </div>
@@ -208,7 +210,7 @@ function MentorRegForm({ user, onFinish }) {
 
       {step === 1 && (
         <form className="form" onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
-          <div className="warn"><span>🗂️</span><span>Administrasi: data diri untuk verifikasi dan pencairan honor. Dijaga kerahasiaannya dan tidak ditampilkan di profil publik.</span></div>
+          <div className="warn"><span><Em e="🗂️" /></span><span>Administrasi: data diri untuk verifikasi dan pencairan honor. Dijaga kerahasiaannya dan tidak ditampilkan di profil publik.</span></div>
           <label>Nama lengkap (sesuai KTM)<input required value={f.nama} onChange={set("nama")} /></label>
           <label>NIM<input required value={f.nim} onChange={set("nim")} placeholder="2106123456" /></label>
           <label>Email kampus<input type="email" required value={f.emailKampus} onChange={set("emailKampus")} placeholder="nama@mhs.kampus.ac.id" /></label>
@@ -230,7 +232,7 @@ function MentorRegForm({ user, onFinish }) {
 
       {step === 2 && (
         <form className="form" onSubmit={(e) => { e.preventDefault(); setStep(3); }}>
-          <div className="warn"><span>📌</span><span>Upload dalam format PDF atau gambar (maks. 5 MB). Ini hanya simulasi — file tidak benar-benar diunggah.</span></div>
+          <div className="warn"><span><Em e="📌" /></span><span>Upload dalam format PDF atau gambar (maks. 5 MB). Ini hanya simulasi — file tidak benar-benar diunggah.</span></div>
           <label>KTM (Kartu Tanda Mahasiswa) <span className="badge">Wajib</span><input type="file" accept="image/*,.pdf" required /></label>
           <label>Sertifikat lomba (minimal 1) <span className="badge">Wajib</span><input type="file" accept="image/*,.pdf" multiple required /></label>
           <label>CV terbaru <span className="badge">Wajib</span><input type="file" accept=".pdf" required /></label>
@@ -246,7 +248,7 @@ function MentorRegForm({ user, onFinish }) {
           items={[{ label: "Biaya pendaftaran & verifikasi mentor", amount: 25000 }]}
           onBack={() => setStep(2)} onPaid={onPaid} onFinish={onFinish} finishLabel="Lihat status verifikasi →"
           note="Profilmu sudah tampil di halaman Mentor dengan lencana “Menunggu verifikasi”. Admin akan memeriksa dokumen dalam 1–3 hari kerja."
-          extraActions={(o) => o.ref && <Link className="btn secondary" href={o.ref}>👀 Lihat profil publik</Link>} />
+          extraActions={(o) => o.ref && <Link className="btn secondary" href={o.ref}><Em e="👀" /> Lihat profil publik</Link>} />
       )}
     </div>
   );
@@ -267,13 +269,13 @@ function MentorDashboard() {
       </div>
       <Bars title="Sesi per bulan (6 bulan terakhir)" data={[["Jun", 3], ["Jul", 5], ["Agu", 4], ["Sep", 7], ["Okt", 9], ["Nov", 12]]} note="Data dummy — tren naik 33% dibanding bulan lalu." />
       <div className="card" style={{ gap: 12 }}>
-        <h4 style={{ fontFamily: "var(--font-poppins)", fontWeight: 600 }}>Progres perkembangan mentor</h4>
+        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Progres perkembangan mentor</h4>
         <Goal label="Level Mentor Silver → Gold (sesi)" now={24} target={40} />
         <Goal label="Target pendapatan bulan ini" now={1200000} target={2000000} fmt={(n) => `Rp ${n.toLocaleString("id-ID")}`} />
         <Goal label="Rating minimal 4,8 (ulasan)" now={18} target={25} />
       </div>
       <div className="card">
-        <h4 style={{ fontFamily: "var(--font-poppins)", fontWeight: 600 }}>Sesi mendatang</h4>
+        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Sesi mendatang</h4>
         {dummySessions.map((s, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < dummySessions.length - 1 ? "1px dashed var(--border)" : "none", gap: 12, flexWrap: "wrap" }}>
             <div>
@@ -325,7 +327,7 @@ function SellerRegForm({ onFinish }) {
 
       {step === 1 && (
         <form className="form" onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
-          <div className="warn"><span>📌</span><span>Upload dalam format PDF atau gambar (maks. 5 MB). Ini hanya simulasi.</span></div>
+          <div className="warn"><span><Em e="📌" /></span><span>Upload dalam format PDF atau gambar (maks. 5 MB). Ini hanya simulasi.</span></div>
           <label>KTP / KTM <span className="badge">Wajib</span><input type="file" accept="image/*,.pdf" required /></label>
           <label>Selfie dengan identitas (opsional)<input type="file" accept="image/*" /></label>
           <div className="row between" style={{ marginTop: 4 }}>
@@ -383,12 +385,12 @@ function SellerDashboard({ user }) {
 
       <Bars title="Penjualan per produk (unit terjual)" data={products.map((p, k) => [p.title.split(" ").slice(0, 2).join(" "), 12 + ((k * 17) % 31)])} note="Data dummy. Produk baru berstatus 'Menunggu review' sampai disetujui admin." />
       <div className="card" style={{ gap: 12 }}>
-        <h4 style={{ fontFamily: "var(--font-poppins)", fontWeight: 600 }}>Progres penjualan</h4>
+        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Progres penjualan</h4>
         <Goal label="Target omzet bulan ini" now={870000} target={1500000} fmt={(n) => `Rp ${n.toLocaleString("id-ID")}`} />
         <Goal label="Target produk terjual" now={34} target={50} />
       </div>
       <details className="card" style={{ gap: 12 }} open>
-        <summary style={{ cursor: "pointer", fontFamily: "var(--font-poppins)", fontWeight: 600, padding: "4px 0" }}>+ Tambah produk baru</summary>
+        <summary style={{ cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 600, padding: "4px 0" }}>+ Tambah produk baru</summary>
         <form className="form" onSubmit={addProduct} style={{ marginTop: 8 }}>
           <label>Judul produk<input name="title" required placeholder="Template Business Plan..." /></label>
           <label>Kategori<select name="cat">{productCategories.map((c) => <option key={c}>{c}</option>)}</select></label>
@@ -404,7 +406,7 @@ function SellerDashboard({ user }) {
       </details>
 
       <div className="card" style={{ gap: 10 }}>
-        <h4 style={{ fontFamily: "var(--font-poppins)", fontWeight: 600 }}>Produk saya ({products.length})</h4>
+        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Produk saya ({products.length})</h4>
         {products.map((p, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < products.length - 1 ? "1px dashed var(--border)" : "none", gap: 12 }}>
             <div>
@@ -412,7 +414,7 @@ function SellerDashboard({ user }) {
               <p className="muted" style={{ fontSize: ".82rem" }}>{p.cat}</p>
             </div>
             <div className="row" style={{ gap: 6 }}>
-              {p.status === "pending" && <span className="nbadge">⏳ Menunggu review</span>}
+              {p.status === "pending" && <span className="nbadge"><Em e="⏳" /> Menunggu review</span>}
               {p.id && <Link className="btn secondary hist-btn" href={`/marketplace/${p.id}`}>Lihat</Link>}
               <span className="badge">Rp {p.price.toLocaleString("id-ID")}</span>
             </div>
@@ -459,7 +461,7 @@ function OrganizerRegForm({ onSubmit }) {
 
       {step === 1 && (
         <form className="form" onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
-          <div className="warn"><span>📌</span><span>Upload surat keterangan/SK organisasi (PDF atau gambar, maks. 5 MB). Ini hanya simulasi.</span></div>
+          <div className="warn"><span><Em e="📌" /></span><span>Upload surat keterangan/SK organisasi (PDF atau gambar, maks. 5 MB). Ini hanya simulasi.</span></div>
           <label>Surat keterangan organisasi <span className="badge">Wajib</span><input type="file" accept="image/*,.pdf" required /></label>
           <label>Dokumen pendukung lainnya (opsional)<input type="file" accept="image/*,.pdf" multiple /></label>
           <div className="row between" style={{ marginTop: 4 }}>
@@ -476,7 +478,7 @@ function OrganizerRegForm({ onSubmit }) {
             <div><span className="muted" style={{ fontSize: ".82rem" }}>*Dibayar saat menambah lomba pertama</span></div>
             <div className="total"><span>Total sekarang</span><strong>Rp 0</strong></div>
           </div>
-          <div className="warn"><span>⚠️</span><span>Ini adalah simulasi. Tidak ada uang yang benar-benar ditagih.</span></div>
+          <div className="warn"><span><Em e="⚠️" /></span><span>Ini adalah simulasi. Tidak ada uang yang benar-benar ditagih.</span></div>
           <div className="row between">
             <button className="btn secondary" type="button" onClick={() => setStep(1)}>← Kembali</button>
             <button className="btn" type="button" onClick={onSubmit}>Ajukan pendaftaran</button>
@@ -540,7 +542,7 @@ function LombaWizard({ user }) {
       )}
       {step === 1 && (
         <form className="form" onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
-          <div className="warn"><span>🗂️</span><span>Administrasi penyelenggara: dipakai admin untuk memverifikasi lomba sebelum tayang. Tidak ditampilkan ke publik.</span></div>
+          <div className="warn"><span><Em e="🗂️" /></span><span>Administrasi penyelenggara: dipakai admin untuk memverifikasi lomba sebelum tayang. Tidak ditampilkan ke publik.</span></div>
           <label>Nama penanggung jawab<input required value={f.pj} onChange={set("pj")} /></label>
           <label>Jabatan<input required value={f.jabatan} onChange={set("jabatan")} placeholder="Ketua panitia" /></label>
           <label>Email resmi penyelenggara<input type="email" required value={f.emailOrg} onChange={set("emailOrg")} /></label>
@@ -560,7 +562,7 @@ function LombaWizard({ user }) {
           items={[{ label: "Biaya listing lomba", amount: 15000 }]}
           onBack={() => setStep(1)} onPaid={onPaid} onFinish={reset} finishLabel="Tambah lomba lain"
           note="Info lombamu sudah tampil di halaman Info Lomba dengan lencana “Menunggu review”. Admin memverifikasi administrasi dalam 1–3 hari kerja."
-          extraActions={(o) => o.ref && <Link className="btn secondary" href={o.ref}>👀 Lihat di Info Lomba</Link>} />
+          extraActions={(o) => o.ref && <Link className="btn secondary" href={o.ref}><Em e="👀" /> Lihat di Info Lomba</Link>} />
       )}
     </div>
   );
@@ -586,17 +588,17 @@ function OrganizerDashboard({ user }) {
 
       <Bars title="Pendaftar per lomba" data={lombas.map((l, k) => [l.title.split(" ")[0], 80 + ((k * 53) % 170)])} note="Data dummy. Info lomba baru tampil di halaman Info Lomba setelah verifikasi dan pembayaran listing." />
       <div className="card" style={{ gap: 12 }}>
-        <h4 style={{ fontFamily: "var(--font-poppins)", fontWeight: 600 }}>Progres pendaftaran</h4>
+        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Progres pendaftaran</h4>
         <Goal label="Target pendaftar" now={312} target={500} />
         <Goal label="Tayangan info lomba" now={4230} target={6000} />
       </div>
       <details className="card" style={{ gap: 12 }} open>
-        <summary style={{ cursor: "pointer", fontFamily: "var(--font-poppins)", fontWeight: 600, padding: "4px 0" }}>+ Daftarkan info lomba baru</summary>
+        <summary style={{ cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 600, padding: "4px 0" }}>+ Daftarkan info lomba baru</summary>
         <LombaWizard user={user} />
       </details>
 
       <div className="card" style={{ gap: 10 }}>
-        <h4 style={{ fontFamily: "var(--font-poppins)", fontWeight: 600 }}>Lomba saya ({lombas.length})</h4>
+        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Lomba saya ({lombas.length})</h4>
         {lombas.map((l, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < lombas.length - 1 ? "1px dashed var(--border)" : "none", gap: 12, flexWrap: "wrap" }}>
             <div>
@@ -605,7 +607,7 @@ function OrganizerDashboard({ user }) {
             </div>
             <div className="row" style={{ gap: 6 }}>
               {l.id && <Link className="btn secondary hist-btn" href={`/lomba/${l.id}`}>Lihat</Link>}
-              {l.status === "pending" ? <span className="nbadge">⏳ Menunggu review</span> : <span className="badge pink">Aktif</span>}
+              {l.status === "pending" ? <span className="nbadge"><Em e="⏳" /> Menunggu review</span> : <span className="badge pink">Aktif</span>}
             </div>
           </div>
         ))}
@@ -633,7 +635,7 @@ function TabRiwayat() {
   if (!list.length) {
     return (
       <div className="card" style={{ textAlign: "center", gap: 8, padding: 28 }}>
-        <span style={{ fontSize: "2.4rem" }}>🗂️</span>
+        <span style={{ fontSize: "2.4rem" }}><Em e="🗂️" /></span>
         <h3>Belum ada aktivitas</h3>
         <p className="muted">Booking mentor, pembelian produk, pendaftaran, dan info lomba yang kamu buat akan muncul di sini beserta statusnya.</p>
         <div className="row" style={{ justifyContent: "center" }}>
@@ -655,7 +657,7 @@ function TabRiwayat() {
           const last = o.step >= k.flow.length - 1;
           return (
             <li key={o.id} className="hist-item">
-              <span className="hist-ico" aria-hidden="true">{k.icon}</span>
+              <span className="hist-ico" aria-hidden="true"><Em e={k.icon} /></span>
               <div className="hist-body">
                 <div className="row between" style={{ gap: 8, flexWrap: "wrap" }}>
                   <strong>{o.title}</strong>
@@ -667,11 +669,11 @@ function TabRiwayat() {
                   {k.flow.map((f, i) => <i key={f} className={i <= o.step ? "on" : ""} />)}
                 </div>
                 <div className="row" style={{ gap: 8, flexWrap: "wrap", marginTop: 6 }}>
-                  {o.items.length > 0 && <Link className="btn secondary hist-btn" href={`/invoice?id=${o.id}`}>🧾 Invoice</Link>}
+                  {o.items.length > 0 && <Link className="btn secondary hist-btn" href={`/invoice?id=${o.id}`}><Em e="🧾" /> Invoice</Link>}
                   {o.ref && <Link className="btn secondary hist-btn" href={o.ref}>Lihat</Link>}
                   {o.target && (o.kind !== "booking" || last) && <ReviewBox order={o} />}
                   {o.kind === "booking" && !last && <span className="muted" style={{ fontSize: ".78rem" }}>Ulasan dibuka setelah sesi selesai.</span>}
-                  {!last && <button className="btn secondary hist-btn" onClick={() => advanceOrder(o.id)}>🧪 Demo: lanjut ke “{k.flow[o.step + 1]}”</button>}
+                  {!last && <button className="btn secondary hist-btn" onClick={() => advanceOrder(o.id)}><Em e="🧪" /> Demo: lanjut ke “{k.flow[o.step + 1]}”</button>}
                 </div>
               </div>
             </li>
@@ -687,7 +689,8 @@ function TabRiwayat() {
 ═══════════════════════════════════════ */
 export default function Dashboard() {
   const { user, login, logout } = useUser();
-  const [tab, setTab] = useState("cari");
+  const orders = useOrders();
+  const [tab, setTab] = useState("home");
   useEffect(() => {
     const t = new URLSearchParams(window.location.search).get("tab");
     if (t) setTab(t);
@@ -703,69 +706,24 @@ export default function Dashboard() {
 
   const updateUser = (u) => login(u);
 
-  // Build tabs
   const TABS = [
-    { id: "cari", label: "🔍 Cari Mentor" },
-    { id: "riwayat", label: "🗂️ Riwayat" },
-    ...(user.roles?.includes("mentor") ? [{ id: "mentor", label: "🎓 Profil Mentor" }] : []),
-    ...(user.roles?.includes("seller") ? [{ id: "seller", label: "🛒 Kelola Produk" }] : []),
-    ...(user.roles?.includes("organizer") ? [{ id: "organizer", label: "🏆 Kelola Lomba" }] : []),
+    { id: "home", label: "Ringkasan", icon: "grid" },
+    { id: "cari", label: "Cari Mentor", icon: "search" },
+    { id: "riwayat", label: "Riwayat", icon: "folder" },
+    ...(user.roles?.includes("mentor") ? [{ id: "mentor", label: "Profil Mentor", icon: "grad" }] : []),
+    ...(user.roles?.includes("seller") ? [{ id: "seller", label: "Kelola Produk", icon: "store" }] : []),
+    ...(user.roles?.includes("organizer") ? [{ id: "organizer", label: "Kelola Lomba", icon: "trophy" }] : []),
   ];
-
-  // Guard: if current tab no longer in tabs list (after role changes), reset to cari
-  const validTab = TABS.find((t) => t.id === tab) ? tab : "cari";
+  const validTab = TABS.find((t) => t.id === tab) ? tab : "home";
 
   return (
-    <div className="container section">
-      {/* Header profil */}
-      <div className="card" style={{ marginBottom: 24, background: "var(--sky)" }}>
-        <div className="row between" style={{ flexWrap: "wrap", gap: 12 }}>
-          <div className="row" style={{ gap: 14 }}>
-            <div style={{
-              width: 52, height: 52, borderRadius: "50%", background: "var(--accent)", color: "var(--on-accent)",
-              display: "grid", placeItems: "center", fontFamily: "var(--font-poppins)", fontWeight: 700, fontSize: "1.3rem", flex: "none"
-            }}>
-              {user.name?.[0]?.toUpperCase() ?? "U"}
-            </div>
-            <div>
-              <h2 style={{ fontSize: "1.3rem", marginBottom: 2 }}>Halo, {user.name} 👋</h2>
-              <p className="muted" style={{ fontSize: ".85rem" }}>{user.email}</p>
-            </div>
-          </div>
-          <div className="row" style={{ gap: 8 }}>
-            <span className={`badge ${user.plan === "premium" ? "pink" : ""}`}>{user.plan === "premium" ? "⭐ Premium" : "Free"}</span>
-            {user.roles?.map((r) => (
-              <span key={r} className="chip on" style={{ fontSize: ".75rem", padding: "3px 10px" }}>
-                {r === "pencari" ? "Pencari Mentor" : r === "mentor" ? "Mentor" : r === "seller" ? "Penjual" : "Penyelenggara"}
-              </span>
-            ))}
-            <button className="btn secondary" onClick={logout} style={{ padding: "6px 14px", fontSize: ".85rem" }}>Keluar</button>
-          </div>
-        </div>
-      </div>
-
-      {/* Tab bar */}
-      <div className="dtabs" style={{ marginBottom: 24 }}>
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            className="dtab"
-            aria-selected={validTab === t.id}
-            onClick={() => setTab(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab content */}
-      <div className="dpanel">
-        {validTab === "cari" && <TabCariMentor />}
-        {validTab === "riwayat" && <TabRiwayat />}
-        {validTab === "mentor" && <TabMentor user={user} updateUser={updateUser} />}
-        {validTab === "seller" && <TabSeller user={user} updateUser={updateUser} />}
-        {validTab === "organizer" && <TabOrganizer user={user} updateUser={updateUser} />}
-      </div>
-    </div>
+    <DashShell user={user} tabs={TABS} tab={validTab} setTab={setTab} logout={logout} orders={orders}>
+      {validTab === "home" && <Overview user={user} orders={orders} goTab={setTab} />}
+      {validTab === "cari" && <TabCariMentor />}
+      {validTab === "riwayat" && <TabRiwayat />}
+      {validTab === "mentor" && <TabMentor user={user} updateUser={updateUser} />}
+      {validTab === "seller" && <TabSeller user={user} updateUser={updateUser} />}
+      {validTab === "organizer" && <TabOrganizer user={user} updateUser={updateUser} />}
+    </DashShell>
   );
 }

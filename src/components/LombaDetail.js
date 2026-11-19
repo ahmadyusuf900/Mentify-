@@ -6,6 +6,7 @@ import { useNow } from "@/lib/useNow";
 import { useCatalog } from "@/lib/listings";
 import Poster from "./Poster";
 import LombaCard from "./LombaCard";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const TABS = [
   ["tentang", "Tentang"],
@@ -72,7 +73,7 @@ export default function LombaDetail({ id }) {
             <span className="dp-avatar" aria-hidden="true">{l.organizer[0]}</span>
             <div>
               <strong>{l.organizer}</strong>
-              <p className="muted">❤ {l.likes + (liked ? 1 : 0)} suka · 👁 {l.views.toLocaleString("id-ID")} dilihat</p>
+              <p className="muted"><Em e="❤" /> {l.likes + (liked ? 1 : 0)} suka · <Em e="👁" /> {l.views.toLocaleString("id-ID")} dilihat</p>
             </div>
           </div>
 
@@ -91,10 +92,10 @@ export default function LombaDetail({ id }) {
               <a className="btn" href={l.links[0][1]} target="_blank" rel="noopener noreferrer">Daftar sekarang</a>
             )}
             <button className="btn secondary" onClick={() => setLiked(!liked)} aria-pressed={liked}>
-              {liked ? "❤ Disukai" : "🤍 Suka"}
+              {liked ? <><Em e="❤" /> Disukai</> : <><Em e="🤍" /> Suka</>}
             </button>
             <button className="btn secondary" onClick={() => setSaved(!saved)} aria-pressed={saved}>
-              {saved ? "🔖 Tersimpan" : "Simpan"}
+              {saved ? <><Em e="🔖" /> Tersimpan</> : "Simpan"}
             </button>
           </div>
         </div>
@@ -134,7 +135,7 @@ export default function LombaDetail({ id }) {
                 const done = nextStep === -1 ? !!now : i < nextStep;
                 return (
                   <li key={t} className={`${done ? "done" : ""} ${i === nextStep ? "now" : ""}`}>
-                    <span className="tl-no">{done ? "✓" : i + 1}</span>
+                    <span className="tl-no">{done ? <Icon name="check" /> : i + 1}</span>
                     <strong>{t}</strong>
                     <span className="muted">{fmtDate(date)}</span>
                     {i === nextStep && <span className="badge pink">Berikutnya</span>}
@@ -152,7 +153,7 @@ export default function LombaDetail({ id }) {
                 const text = rest.length ? rest.join(": ") : p;
                 return (
                   <div key={p} className="prize">
-                    <span className="prize-icon">{MEDALS[i] || "🎁"}</span>
+                    <span className="prize-icon"><Em e={MEDALS[i] || "🎁"} /></span>
                     <strong>{title}</strong>
                     <span className="muted">{text}</span>
                   </div>
@@ -164,7 +165,7 @@ export default function LombaDetail({ id }) {
           {tab === "syarat" && (
             <ul className="check-grid">
               {l.requirements.map((r) => (
-                <li key={r}><span aria-hidden="true">✔</span>{r}</li>
+                <li key={r}><span aria-hidden="true"><Icon name="check" /></span>{r}</li>
               ))}
             </ul>
           )}

@@ -4,6 +4,7 @@ import { mentors } from "@/data/mentors";
 import { lomba } from "@/data/lomba";
 import { products } from "@/data/products";
 import ProductSlider from "@/components/landing/ProductSlider";
+import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const TABS = [
   { id: "mentor",  label: "🎓 Mentor Terbaik",  mode: "mentor"  },
@@ -37,7 +38,7 @@ export default function ShowcaseTabs() {
             className={`sc-tabitem${id === active ? " sc-tabitem-on" : ""}`}
             onClick={() => setActive(id)}
           >
-            {label}
+            {emo(label)}
           </button>
         ))}
       </div>
