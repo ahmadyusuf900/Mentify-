@@ -20,7 +20,6 @@ export default function ProductCard({ p, free = false }) {
           <span className="price">{rupiah(p.price)}</span>
           {p.oldPrice > 0 && <s className="muted">{rupiah(p.oldPrice)}</s>}
         </div>
-        {free && <span className="badge pink">Gratis untuk premium</span>}
       </div>
     </Link>
   );

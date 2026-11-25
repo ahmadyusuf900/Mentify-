@@ -1,11 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { FREE_QUOTA, PRODUCT_FEE, PROMO } from "@/data/products";
+import { PROMO } from "@/data/products";
 import { PAYMENTS, ADMIN_WA } from "@/data/mentors";
 import { rupiah } from "@/lib/format";
-import { useUser } from "@/lib/auth";
-import { useQuota } from "@/lib/quota";
 import { addOrder } from "@/lib/orders";
 import { useCatalog } from "@/lib/listings";
 import { useReviews, mergeRating } from "@/lib/reviews";
@@ -22,10 +20,7 @@ export default function ProductDetail({ id }) {
   const { mine } = useReviews("produk", id);
   const [stage, setStage] = useState("form");
   const p = products.find((x) => x.id === Number(id));
-  const { user } = useUser();
-  const { ids, left, claim } = useQuota();
   const [tab, setTab] = useState("desk");
-  const [via, setVia] = useState("beli");
   const [email, setEmail] = useState("");
   const [promoIn, setPromoIn] = useState("");
   const [promoOk, setPromoOk] = useState(false);
@@ -37,15 +32,11 @@ export default function ProductDetail({ id }) {
   if (!p) return !ready ? <div className="container section muted">Memuat produk…</div> : <div className="container section">Produk tidak ditemukan. <Link href="/marketplace"><u>Kembali</u></Link></div>;
 
   const seller = mentors.find((m) => m.name === p.seller);
-  const premium = user?.plan === "premium";
-  const claimed = ids.includes(p.id);
-  const canQuota = premium && left > 0;
-  const useQuotaNow = canQuota && via === "kuota";
   const pay = PAYMENTS.find((x) => x.key === payKey);
   const discount = promoOk ? Math.round((p.price * PROMO.pct) / 100) : 0;
-  const total = useQuotaNow ? 0 : p.price - discount + PRODUCT_FEE;
+  const total = p.price - discount;
   const emailOk = /\S+@\S+\.\S+/.test(email);
-  const canSubmit = agree && emailOk && (useQuotaNow || !pay.sub || paySub);
+  const canSubmit = agree && emailOk && (!pay.sub || paySub);
   const related = products.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 4);
   const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
 
@@ -54,14 +45,11 @@ export default function ProductDetail({ id }) {
     setPromoOk(ok);
     setPromoMsg(ok ? `Kode berlaku, diskon ${PROMO.pct}%.` : "Kode tidak valid.");
   };
-  const methodStr = useQuotaNow ? "Kuota premium" : `${payKey}${paySub ? ` – ${paySub}` : ""}`;
-  const items = useQuotaNow
-    ? [{ label: p.title, amount: 0 }]
-    : [{ label: p.title, amount: p.price }, ...(discount ? [{ label: `Diskon promo ${PROMO.pct}%`, amount: -discount }] : []), { label: "Biaya layanan", amount: PRODUCT_FEE }];
+  const methodStr = `${payKey}${paySub ? ` – ${paySub}` : ""}`;
+  const items = [{ label: p.title, amount: p.price }, ...(discount ? [{ label: `Diskon promo ${PROMO.pct}%`, amount: -discount }] : [])];
   const submit = () => {
-    if (useQuotaNow) claim(p.id);
     return addOrder({
-      kind: useQuotaNow ? "kuota" : "produk", title: p.title, detail: `${p.category} · ${p.format} · oleh ${p.seller}`,
+      kind: "produk", to: p.seller, title: p.title, detail: `${p.category} · ${p.format} · oleh ${p.seller}`,
       items, method: methodStr, ref: `/marketplace/${p.id}`, target: { type: "produk", id: p.id, name: p.title },
     });
   };
@@ -84,6 +72,7 @@ export default function ProductDetail({ id }) {
           <h1 className="idc-name">{p.title}</h1>
           <div className="row" style={{ justifyContent: "center" }}>
             <span className="badge pink">{p.category}</span>
+            {p.demo && <span className="badge demo">Contoh lengkap</span>}
             <span className="badge"><Icon name="check" /> Dari mentor terverifikasi</span>
           </div>
           <dl className="idc-rows">
@@ -147,52 +136,29 @@ export default function ProductDetail({ id }) {
                 title={p.title} detail={`${p.category} · ${p.format} · oleh ${p.seller}`}
                 items={items} method={methodStr} onBack={() => setStage("form")} onPay={submit}
                 success={{
-                  title: useQuotaNow || items.every((i) => i.amount === 0) ? "Akses dibuka" : "Pembayaran berhasil",
+                  title: "Pembayaran berhasil",
                   note: "File sudah bisa diunduh dan dikirim ke email kamu. Bagaimana produknya? Beri ulasan agar membantu pembeli lain.",
                   actions: (o) => (<>
-                    <button className="btn secondary">⬇️ Unduh file</button>
+                    <a className="btn secondary" href={p.file || "#"} download={!!p.file}>Unduh file</a>
                     <a className="btn secondary" href={ADMIN_WA.url} target="_blank" rel="noopener noreferrer">Hubungi admin</a>
                     <div style={{ flexBasis: "100%" }}><ReviewBox order={o} /></div>
                   </>),
                 }}
               />
-            ) : claimed ? (
-              <div className="ostep">
-                <p className="badge pink" style={{ justifySelf: "start" }}>Akses dibuka</p>
-                <h3>Produk ini sudah kamu klaim</h3>
-                <div className="row"><button className="btn">Unduh file</button>
-                  <Link className="btn secondary" href="/dashboard?tab=riwayat"><Em e="🗂️" /> Riwayat &amp; ulasan</Link></div>
-                <p className="muted">Simulasi: belum ada file nyata.</p>
-              </div>
             ) : (
               <>
-                <div className="ostep"><h4>1. Cara akses</h4>
-                  {canQuota ? (
-                    <div className="pay-grid">
-                      <button type="button" className="pay" aria-pressed={via === "kuota"} onClick={() => setVia("kuota")}>
-                        <strong>Gratis (kuota premium)</strong><span className="muted">Sisa {left} dari {FREE_QUOTA} bulan ini</span></button>
-                      <button type="button" className="pay" aria-pressed={via === "beli"} onClick={() => setVia("beli")}>
-                        <strong>Beli {rupiah(p.price)}</strong><span className="muted">Kuota premium tidak terpakai</span></button>
-                    </div>
-                  ) : premium ? (
-                    <p className="notice">Kuota gratis bulan ini sudah habis. Kamu masih bisa membeli produk ini.</p>
-                  ) : (
-                    <p className="notice">Akun free perlu membayar. <Link href="/login"><u>Upgrade ke premium</u></Link> untuk {FREE_QUOTA} akses gratis per bulan.</p>
-                  )}
-                </div>
-
-                <div className="ostep"><h4>2. Email penerima file</h4>
+                <div className="ostep"><h4>1. Email penerima file</h4>
                   <input type="email" placeholder="nama@email.com" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="Email" /></div>
 
-                {!useQuotaNow && (<>
-                  <div className="ostep"><h4>3. Kode promo (opsional)</h4>
+                <>
+                  <div className="ostep"><h4>2. Kode promo (opsional)</h4>
                     <div className="row" style={{ flexWrap: "nowrap" }}>
                       <input placeholder={`Coba ${PROMO.code}`} value={promoIn} onChange={(e) => setPromoIn(e.target.value)} aria-label="Kode promo" />
                       <button type="button" className="btn secondary" onClick={applyPromo}>Pakai</button>
                     </div>
                     {promoMsg && <p className="muted" role="status">{promoMsg}</p>}</div>
 
-                  <div className="ostep"><h4>4. Metode pembayaran</h4>
+                  <div className="ostep"><h4>3. Metode pembayaran</h4>
                     <div className="pay-grid">{PAYMENTS.map((x) => (
                       <button key={x.key} type="button" className="pay" aria-pressed={payKey === x.key}
                         onClick={() => { setPayKey(x.key); setPaySub(""); }}>
@@ -202,16 +168,12 @@ export default function ProductDetail({ id }) {
                         <option value="">Pilih {pay.key === "Transfer Bank" ? "bank" : "e-wallet"}</option>
                         {pay.sub.map((s) => <option key={s}>{s}</option>)}
                       </select>)}</div>
-                </>)}
+                </>
 
                 <div className="summary">
                   <div><span>Harga produk</span><span>{rupiah(p.price)}</span></div>
-                  {useQuotaNow ? (
-                    <div><span>Potongan kuota premium</span><span>-{rupiah(p.price)}</span></div>
-                  ) : (<>
-                    {discount > 0 && <div><span>Diskon promo ({PROMO.pct}%)</span><span>-{rupiah(discount)}</span></div>}
-                    <div><span>Biaya layanan</span><span>{rupiah(PRODUCT_FEE)}</span></div>
-                  </>)}
+                  {discount > 0 && <div><span>Diskon promo ({PROMO.pct}%)</span><span>-{rupiah(discount)}</span></div>}
+                  <div><span>Biaya transaksi</span><span>Gratis</span></div>
                   <div className="total"><span>Total</span><span>{rupiah(total)}</span></div>
                 </div>
 
@@ -227,7 +189,7 @@ export default function ProductDetail({ id }) {
                   <span>Saya menyetujui syarat dan ketentuan pembelian produk digital.</span></label>
 
                 <button className="btn" disabled={!canSubmit} onClick={() => setStage("pay")}>
-                  {useQuotaNow ? "Lanjut: buka akses gratis" : `Lanjut ke pembayaran · ${rupiah(total)}`}
+                  Lanjut ke pembayaran · {rupiah(total)}
                 </button>
               </>
             )}

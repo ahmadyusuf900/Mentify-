@@ -1,3 +1,4 @@
+"use client";
 const G = [
   "linear-gradient(160deg,#7DA7D9,#2F4860)",
   "linear-gradient(160deg,#2F4860,#7DA7D9)",
@@ -9,7 +10,7 @@ export default function MentorAvatar({ m, size = "" }) {
   return (
     <div className={`mphoto ${size}`}>
       {m.photo ? (
-        <img src={m.photo} alt={`Foto ${m.name}`} />
+        <img ref={(el) => { if (el && el.complete && el.naturalWidth === 0 && m.photoFallback && !el.dataset.fb) { el.dataset.fb = "1"; el.src = m.photoFallback; } }} src={m.photo} alt={`Foto ${m.name}`} onError={(e) => { if (m.photoFallback && !e.currentTarget.dataset.fb) { e.currentTarget.dataset.fb = "1"; e.currentTarget.src = m.photoFallback; } }} />
       ) : (
         <div className="mphoto-ph" style={{ background: G[m.id % 3] }} role="img" aria-label={`Foto ${m.name}`}>
           <svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMax meet" aria-hidden="true">

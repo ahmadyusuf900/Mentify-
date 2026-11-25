@@ -1,9 +1,18 @@
-import { Bricolage_Grotesque, Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-display" });
-const body = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-body" });
+// Font dibundel di src/fonts (tanpa download Google Fonts), jadi selalu tampil sama di semua perangkat.
+const display = localFont({
+  src: [{ path: "../fonts/bricolage-grotesque-latin-wght-normal.woff2", weight: "200 800", style: "normal" }],
+  variable: "--font-display", display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "Segoe UI", "Arial", "sans-serif"],
+});
+const body = localFont({
+  src: [{ path: "../fonts/inter-latin-wght-normal.woff2", weight: "100 900", style: "normal" }],
+  variable: "--font-body", display: "swap",
+  fallback: ["ui-sans-serif", "system-ui", "Segoe UI", "Arial", "sans-serif"],
+});
 export const metadata = { title: "Mentify", description: "Mentor lomba, info lomba, dan produk digital untuk mahasiswa & pelajar" };
 export const viewport = { width: "device-width", initialScale: 1 };
 export default function RootLayout({ children }) {

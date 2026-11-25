@@ -12,17 +12,17 @@ const ROLES = [
   { id: "pencari", icon: "search", label: "Pencari Mentor", desc: "Cari & pesan mentor", tab: "cari",
     flow: ["Masuk / daftar", "Cari mentor sesuai lomba", "Pilih jadwal & bayar sesi", "Ikut sesi bimbingan"] },
   { id: "mentor", icon: "grad", label: "Mentor", desc: "Bagikan keahlian", tab: "mentor",
-    flow: ["Masuk / daftar", "Isi profil & keahlian", "Unggah KTM, sertifikat & CV", "Bayar biaya aktivasi Rp 25.000", "Verifikasi admin → dashboard progres mentor"] },
+    flow: ["Masuk / daftar", "Isi profil & keahlian", "Unggah KTM, sertifikat & CV (gratis)", "Verifikasi admin → terima 90% tiap sesi"] },
   { id: "seller", icon: "store", label: "Penjual Produk", desc: "Jual materi digital", tab: "seller",
-    flow: ["Masuk / daftar", "Isi info toko", "Verifikasi identitas", "Bayar aktivasi Rp 10.000", "Verifikasi admin → katalog & progres penjualan"] },
+    flow: ["Masuk / daftar", "Isi info toko", "Verifikasi identitas (gratis)", "Verifikasi admin → jual produk, komisi 10%"] },
   { id: "organizer", icon: "trophy", label: "Penyelenggara", desc: "Pasang info lomba", tab: "organizer",
-    flow: ["Masuk / daftar", "Isi info organisasi", "Verifikasi legalitas", "Bayar listing per lomba Rp 15.000", "Verifikasi admin → kelola lomba & pendaftar"] },
+    flow: ["Masuk / daftar", "Isi info organisasi", "Verifikasi legalitas", "Tayang Rp 15.000 per bulan per lomba"] },
 ];
 
 export default function Login() {
   const [mode, setMode] = useState("masuk");
   const [role, setRole] = useState("pencari");
-  const [f, setF] = useState({ name: "", email: "", password: "", plan: "free" });
+  const [f, setF] = useState({ name: "", email: "", password: "" });
   const [show, setShow] = useState(false);
   const [remember, setRemember] = useState(true);
   const [note, setNote] = useState("");
@@ -41,7 +41,6 @@ export default function Login() {
     login({
       name: f.name || same.name || f.email.split("@")[0],
       email: f.email,
-      plan: same.plan || f.plan,
       roles,
       mentorStatus: same.mentorStatus || "none",
       sellerStatus: same.sellerStatus || "none",
@@ -106,11 +105,6 @@ export default function Login() {
                 <button type="button" className="auth-eye" onClick={() => setShow(!show)} aria-label={show ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}><Icon name={show ? "eyeoff" : "eye"} /></button>
               </div>
             </label>
-            {mode === "daftar" && (
-              <label className="auth-field"><span>Paket (simulasi)</span>
-                <div className="auth-input"><Icon name="star" /><select value={f.plan} onChange={set("plan")}><option value="free">Free</option><option value="premium">Premium</option></select></div>
-              </label>
-            )}
             {mode === "masuk" && (
               <div className="auth-row">
                 <label className="auth-check"><input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Ingat saya</label>

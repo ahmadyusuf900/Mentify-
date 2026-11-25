@@ -5,6 +5,7 @@ import { rupiah } from "@/lib/format";
 import { nextInvoiceNo } from "@/lib/orders";
 import { useUser } from "@/lib/auth";
 import { PAYMENTS } from "@/data/mentors";
+import Receipt from "@/components/Receipt";
 import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const hash = (str) => { let h = 2166136261; for (const c of str) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
@@ -82,17 +83,10 @@ export default function PaymentCard({ title, detail, items, method, onBack, onPa
 
       {stage === "paid" ? (
         <div className="pc-success">
-          <svg viewBox="0 0 52 52" className="pc-check" aria-hidden="true"><circle cx="26" cy="26" r="24" /><path d="M14 27l8 8 16-17" /></svg>
-          <h3>{success.title || "Pembayaran berhasil"}</h3>
-          <p className="muted">{success.note}</p>
-          <div className="summary" style={{ width: "100%" }}>
-            <div><span>{title}</span><span /></div>
-            <div><span>Metode</span><strong>{method}</strong></div>
-            <div><span>Waktu</span><strong>{new Date(order.ts).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}</strong></div>
-            <div className="total"><span>Total dibayar</span><span>{rupiah(total)}</span></div>
-          </div>
+          <h3 style={{ textAlign: "center" }}>{success.title || "Pembayaran berhasil"}</h3>
+          <p className="muted" style={{ textAlign: "center" }}>{success.note}</p>
+          <Receipt o={order} />
           <div className="row" style={{ gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
-            <Link className="btn" href={`/invoice?id=${order.id}`}><Em e="🧾" /> Lihat invoice</Link>
             {success.actions?.(order)}
           </div>
         </div>

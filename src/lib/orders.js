@@ -12,7 +12,6 @@ const me = () => { try { return JSON.parse(localStorage.getItem("mentify_user"))
 export const KINDS = {
   booking:   { icon: "🎓", label: "Booking mentor",   flow: ["Menunggu konfirmasi mentor", "Dikonfirmasi", "Sesi selesai"] },
   produk:    { icon: "📚", label: "Beli produk",      flow: ["Lunas, siap diunduh"] },
-  kuota:     { icon: "⭐", label: "Klaim kuota premium", flow: ["Akses dibuka"] },
   mentor:    { icon: "🧑‍🏫", label: "Pendaftaran mentor", flow: ["Dibayar · menunggu verifikasi", "Terverifikasi"] },
   seller:    { icon: "🛒", label: "Aktivasi toko",     flow: ["Dibayar · menunggu verifikasi", "Terverifikasi"] },
   organizer: { icon: "🏆", label: "Daftar penyelenggara", flow: ["Menunggu verifikasi", "Terverifikasi"] },
@@ -25,13 +24,13 @@ export const nextInvoiceNo = () => {
   return `INV/MTF/${day}/${String(read().length + 1).padStart(4, "0")}`;
 };
 
-export function addOrder({ kind, title, detail = "", items = [], method = "", ref = "", step = 0, target = null, listing = null }) {
+export function addOrder({ kind, title, detail = "", items = [], method = "", ref = "", step = 0, target = null, listing = null, to = "", meeting = null }) {
   const list = read();
   const ts = new Date();
   const total = items.reduce((s, i) => s + i.amount, 0);
   const id = `${ts.getTime()}${Math.floor(Math.random() * 90 + 10)}`;
   const o = {
-    id, kind, title, detail, items, total, method, ref, step, target, listing,
+    id, kind, title, detail, items, total, method, ref, step, target, listing, to, meeting,
     no: nextInvoiceNo(),
     ts: ts.toISOString(),
     buyer: { name: me().name || "Pengguna", email: me().email || "-" },

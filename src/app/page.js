@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { mentors, ADMIN_WA } from "@/data/mentors";
 import { lomba } from "@/data/lomba";
-import { products, FREE_QUOTA } from "@/data/products";
+import { products } from "@/data/products";
 import VideoProfile from "@/components/VideoProfile";
 import Explorer from "@/components/landing/Explorer";
 import WhyMentify from "@/components/landing/WhyMentify";
@@ -17,7 +17,7 @@ const ADV = [
   ["🔑", "Satu akun, semua peran", "Cari mentor, jadi mentor, pasang info lomba, dan jual produk digital tanpa berganti akun.", "sky", "tk-s2"],
   ["🧾", "Harga dan jadwal jelas", "Tarif, durasi, jam tersedia, dan rincian biaya tampil sebelum kamu membayar.", "mint", "tk-s2"],
   ["🛟", "Ada tempat bertanya", "Jika sesi atau pembayaran tidak sesuai kesepakatan, kontak admin Mentify tersedia di halaman pemesanan.", "rose", "tk-s2"],
-  ["📚", "Materi dari para juara", `Akun premium mendapat kuota ${FREE_QUOTA} produk gratis tiap bulan, akun free membayar per produk.`, "lilac", "tk-s2"],
+  ["📚", "Materi dari para juara", "Esai juara, template, dan materi siap unduh. Harga jelas tanpa biaya tambahan.", "lilac", "tk-s2"],
   ["⏱️", "Status lomba selalu terbarui", "Buka atau tutupnya pendaftaran dihitung otomatis dari tenggat, jadi kamu tidak mendaftar ke lomba yang sudah lewat.", "coral", "tk-s6"],
 ];
 
@@ -36,9 +36,9 @@ const SERVICES = [
 
 const FAQ = [
   ["Siapa yang bisa menjadi mentor?", "Mahasiswa aktif. Kamu perlu melampirkan KTM, sertifikat lomba, dan CV yang kami verifikasi lebih dulu."],
-  ["Berapa biaya satu sesi?", "Tiap mentor menentukan tarifnya sendiri. Rincian biaya, termasuk biaya layanan, tampil sebelum kamu membayar."],
-  ["Apa bedanya akun free dan premium?", `Akun premium mendapat kuota ${FREE_QUOTA} produk digital gratis per bulan. Akun free membayar untuk setiap produk.`],
-  ["Bagaimana jika sesi tidak sesuai kesepakatan?", `Hubungi admin Mentify lewat WhatsApp ${ADMIN_WA.label}. Lakukan pembayaran dan komunikasi lewat Mentify agar terlindungi.`],
+  ["Berapa biaya satu sesi?", "Tiap mentor menentukan tarifnya sendiri. Kamu hanya membayar tarif mentor, tanpa biaya tambahan. Mentify mengambil komisi 10% dari sisi mentor."],
+  ["Apa saja yang berbayar di Mentify?", "Mencari mentor, membaca info lomba, dan mendaftar semua peran gratis. Mentify hanya mengambil komisi 10% dari tiap sesi mentor dan penjualan produk, serta Rp15.000 per bulan untuk penyelenggara yang memasang info lomba."],
+    ["Bagaimana jika sesi tidak sesuai kesepakatan?", `Hubungi admin Mentify lewat WhatsApp ${ADMIN_WA.label}. Lakukan pembayaran dan komunikasi lewat Mentify agar terlindungi.`],
   ["Apakah satu akun bisa dipakai untuk semua peran?", "Bisa. Satu akun dapat mencari mentor, menjadi mentor, memasang info lomba, dan menjual produk digital."],
 ];
 

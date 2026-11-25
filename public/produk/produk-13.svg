@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800"><rect width="600" height="800" fill="#FFE98A"/>
+<rect x="40" y="40" width="520" height="720" rx="28" fill="#fff" stroke="#2F4860" stroke-width="4"/>
+<rect x="40" y="40" width="520" height="150" rx="28" fill="#7DA7D9"/><rect x="40" y="150" width="520" height="40" fill="#7DA7D9"/>
+<text x="80" y="104" font-family="Arial,sans-serif" font-weight="700" font-size="22" fill="#fff" letter-spacing="3">PANDUAN PDF</text>
+<text x="80" y="150" font-family="Arial,sans-serif" font-weight="700" font-size="20" fill="#fff">Materi Lomba · Esai/LKTI</text>
+<text x="80" y="290" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="58" fill="#2F4860">ESAI LKTI</text>
+<text x="80" y="352" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="58" fill="#2F4860">6 LANGKAH</text>
+<text x="80" y="414" font-family="Arial,sans-serif" font-weight="700" font-size="30" fill="#E0703A">dari Nol</text>
+<g fill="#2F4860" opacity=".25"><rect x="80" y="450" width="380" height="12" rx="6"/><rect x="80" y="478" width="320" height="12" rx="6"/><rect x="80" y="506" width="350" height="12" rx="6"/></g>
+<text x="80" y="720" font-family="Arial,sans-serif" font-weight="700" font-size="22" fill="#2F4860">oleh Kirana Demo</text></svg>

@@ -1,9 +1,11 @@
 // Nomor admin ini hanya contoh. Ganti dengan nomor asli.
 export const ADMIN_WA = { label: "0812-0000-0000", url: "https://wa.me/628120000000" };
-export const ADMIN_FEE = 2500;
+export const COMMISSION = 0.1; // komisi Mentify 10% per transaksi (dipotong dari penghasilan mentor/penjual)
+export const LOMBA_FEE = 15000; // biaya pasang info lomba per bulan
+export const cut = (n) => Math.round(n * COMMISSION);
 export const DAYS = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 export const DURATIONS = [60, 90, 120];
-export const FORMATS = ["Google Meet", "Zoom", "WhatsApp Video Call"];
+export const FORMATS = ["Google Meet", "Zoom"];
 export const PAYMENTS = [
   { key: "QRIS", note: "Semua e-wallet & m-banking" },
   { key: "Transfer Bank", note: "Virtual account", sub: ["BCA", "Mandiri", "BNI", "BRI"] },
@@ -24,6 +26,7 @@ const rows = [
  ["Hadi Setiawan","Universitas Padjadjaran","Sistem Informasi",2023,"UI/UX",70000,4.5,"Finalis Hackathon UI/UX 2025",[2,6,0]],
  ["Intan Permata","IPB University","Agribisnis",2022,"Business Plan",75000,4.7,"Juara 2 Lomba Wirausaha Agribisnis 2025",[1,3,5]],
  ["Joko Santoso","Universitas Negeri Yogyakarta","Pendidikan Seni Rupa",2023,"Poster/Desain Grafis",50000,4.4,"Juara 3 Poster Kampanye Nasional 2025",[3,4,6]],
+ ["Kirana Demo","Universitas Indonesia","Ilmu Komunikasi",2022,"Esai/LKTI",80000,5.0,"Juara 1 LKTI Nasional 2025",[1,3,6]],
 ];
 
 export const CAT = {
@@ -44,7 +47,7 @@ const POOL = [
 
 export const mentors = rows.map(([name, campus, major, year, category, price, rating, highlight, days], i) => ({
   id: i + 1, name, campus, major, year, category, price, rating, highlight, days,
-  photo: `/mentor/mentor-${i + 1}.svg`, // GANTI FOTO: taruh file di public/mentor lalu ubah path ini (mis. "/mentor/alya.jpg"), atau timpa file dengan nama sama
+  photo: i === 12 ? "/mentor/demo-mentor.jpg" : `/mentor/mentor-${i + 1}.svg`, photoFallback: `/mentor/mentor-${i + 1}.svg`, demo: i === 12, // GANTI FOTO: taruh file di public/mentor lalu ubah path ini (mis. "/mentor/alya.jpg"), atau timpa file dengan nama sama
   code: `MTF-26-${String(i + 1).padStart(3, "0")}`,
   joined: i % 3 === 0 ? "Januari 2026" : "Maret 2026",
   tags: CAT[category].tags, help: CAT[category].help,
@@ -82,3 +85,9 @@ export const mentorCampuses = [...new Set(rows.map((r) => r[1]))];
 const MULT = { 60: 1, 90: 1.4, 120: 1.8 };
 export const priceFor = (m, mins) => Math.round((m.price * MULT[mins]) / 1000) * 1000;
 export const priceRange = (m) => [priceFor(m, 60), priceFor(m, 120)];
+// Tautan ruang rapat contoh (demo). Saat backend siap, buat ruang Zoom / Google Meet lewat API masing-masing.
+export const MEETING_PLATFORMS = {
+  "Google Meet": (seed) => { const a = "abcdefghijklmnopqrstuvwxyz"; const p = (n, o) => Array.from({ length: n }, (_, i) => a[(seed * 7 + o + i * 5) % 26]).join(""); return `https://meet.google.com/${p(3, 1)}-${p(4, 9)}-${p(3, 17)}`; },
+  Zoom: (seed) => `https://zoom.us/j/${String(8200000000 + ((seed * 7919) % 1000000000)).slice(0, 10)}`,
+};
+export const meetingFor = (platform, seed) => (MEETING_PLATFORMS[platform] || MEETING_PLATFORMS["Google Meet"])(Math.abs(seed) + 3);

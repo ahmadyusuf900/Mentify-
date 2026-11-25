@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { DAYS, DURATIONS, FORMATS, PAYMENTS, ADMIN_WA, ADMIN_FEE, priceFor } from "@/data/mentors";
+import { DAYS, DURATIONS, FORMATS, PAYMENTS, ADMIN_WA, priceFor, meetingFor } from "@/data/mentors";
 import { rupiah } from "@/lib/format";
 import { useNow } from "@/lib/useNow";
 import { addOrder } from "@/lib/orders";
@@ -47,7 +47,7 @@ export default function MentorBooking({ id }) {
 
   const pay = PAYMENTS.find((p) => p.key === payKey);
   const price = priceFor(m, dur);
-  const total = price + ADMIN_FEE;
+  const total = price;
   const dateObj = dates.find((d) => ymd(d) === date);
   const dateLabel = dateObj ? dateObj.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" }) : "";
   const booked = (d, idx) => (m.id * 7 + d.getDate() * 3 + idx * 5) % 6 === 0; // contoh slot terisi
@@ -59,8 +59,9 @@ export default function MentorBooking({ id }) {
   const submit = () => addOrder({
     kind: "booking", title: `Sesi mentoring dengan ${m.name}`,
     detail: `${m.category} · ${dateLabel}, ${slot} WIB · ${dur} menit · ${fmt}`,
-    items: [{ label: `Sesi ${dur} menit`, amount: price }, { label: "Biaya layanan", amount: ADMIN_FEE }],
-    method: methodStr, ref: `/mentor/${m.id}`, target: { type: "mentor", id: m.id, name: m.name },
+    items: [{ label: `Sesi ${dur} menit`, amount: price }],
+    method: methodStr, ref: `/mentor/${m.id}`, target: { type: "mentor", id: m.id, name: m.name }, to: m.name,
+    meeting: { platform: fmt, link: meetingFor(fmt, m.id * 31 + (date ? Number(String(date).slice(-2)) || 1 : 1)), date: dateLabel, time: `${slot} WIB` },
   });
   const reset = () => { setStage("form"); setDate(""); setSlot(""); setAgree(false); setNote(""); };
 
@@ -81,6 +82,7 @@ export default function MentorBooking({ id }) {
           <h1 className="idc-name">{m.name}</h1>
           <div className="row" style={{ justifyContent: "center" }}>
             <span className="badge pink">Mentor {m.category}</span>
+            {m.demo && <span className="badge demo">Contoh lengkap</span>}
             {m.status === "pending" ? <span className="nbadge"><Em e="⏳" /> Menunggu verifikasi</span> : <span className="badge">✔ Terverifikasi</span>}
           </div>
           <dl className="idc-rows">
@@ -161,7 +163,7 @@ export default function MentorBooking({ id }) {
               <PaymentCard
                 title={`Sesi mentoring dengan ${m.name}`}
                 detail={`${m.category} · ${dateLabel}, ${slot} WIB · ${dur} menit · ${fmt}`}
-                items={[{ label: `Sesi ${dur} menit`, amount: price }, { label: "Biaya layanan", amount: ADMIN_FEE }]}
+                items={[{ label: `Sesi ${dur} menit`, amount: price }]}
                 method={methodStr} onBack={() => setStage("form")} onPay={submit}
                 success={{
                   title: "Pembayaran berhasil — booking diterima",
@@ -216,7 +218,7 @@ export default function MentorBooking({ id }) {
 
                 <div className="summary">
                   <div><span>Sesi {dur} menit</span><span>{rupiah(price)}</span></div>
-                  <div><span>Biaya layanan</span><span>{rupiah(ADMIN_FEE)}</span></div>
+                  <div><span>Biaya transaksi</span><span>Gratis</span></div>
                   <div className="total"><span>Total</span><span>{rupiah(total)}</span></div>
                 </div>
 

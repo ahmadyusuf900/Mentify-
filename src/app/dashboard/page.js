@@ -6,7 +6,7 @@ import { lombaTypes, lombaLevels } from "@/data/lomba";
 import { productCategories, productLombaTypes } from "@/data/products";
 import { addOrder, advanceOrder, advanceLatest, clearOrders, useOrders, KINDS } from "@/lib/orders";
 import { addListing, nextListingId, useCatalog } from "@/lib/listings";
-import { makeMentor } from "@/data/mentors";
+import { makeMentor, LOMBA_FEE, COMMISSION, cut } from "@/data/mentors";
 import { makeLomba } from "@/data/lomba";
 import { makeProduct } from "@/data/products";
 import { readImage } from "@/lib/image";
@@ -67,7 +67,7 @@ function Bars({ title, unit = "", data, note }) {
   const max = Math.max(...data.map((d) => d[1]), 1);
   return (
     <div className="card" style={{ gap: 10 }}>
-      <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>{title}</h4>
+      <h4 style={{ fontFamily: "var(--fd)", fontWeight: 600 }}>{title}</h4>
       <div className="bars" role="img" aria-label={title}>
         {data.map(([l, v]) => (
           <div className="bar" key={l}>
@@ -96,7 +96,7 @@ function StatCard({ icon, label, value }) {
   return (
     <div className="card" style={{ alignItems: "center", textAlign: "center", gap: 4 }}>
       <span style={{ fontSize: "1.6rem" }}><Em e={icon} /></span>
-      <strong style={{ fontSize: "1.5rem", fontFamily: "var(--font-display)" }}>{value}</strong>
+      <strong style={{ fontSize: "1.5rem", fontFamily: "var(--fd)" }}>{value}</strong>
       <span className="muted" style={{ fontSize: ".82rem" }}>{label}</span>
     </div>
   );
@@ -167,7 +167,21 @@ function RegPay({ title, detail, items, onBack, onPaid, onFinish, finishLabel, n
   );
 }
 
-const MENTOR_STEPS = ["Info dasar", "Administrasi", "Dokumen", "Pembayaran"];
+function RegDone({ title, note, onFinish, finishLabel, children }) {
+  return (
+    <div className="regdone">
+      <span className="regdone-ic"><Icon name="checkcircle" size={34} /></span>
+      <h3>{title}</h3>
+      <p className="muted">{note}</p>
+      <div className="row" style={{ justifyContent: "center" }}>
+        {finishLabel && <button className="btn" onClick={onFinish}>{finishLabel}</button>}
+        {children}
+      </div>
+    </div>
+  );
+}
+
+const MENTOR_STEPS = ["Info dasar", "Administrasi", "Dokumen", "Selesai"];
 
 function MentorRegForm({ user, onFinish }) {
   const [step, setStep] = useState(0);
@@ -176,13 +190,12 @@ function MentorRegForm({ user, onFinish }) {
   const set = (k) => (e) => setF({ ...f, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
   const [photoMsg, setPhotoMsg] = useState("");
 
-  const onPaid = () => {
+  const [doneId, setDoneId] = useState(null);
+  const submitReg = () => {
     const id = nextListingId("mentors");
     addListing("mentors", makeMentor({ name: f.nama, campus: f.kampus, major: f.jurusan, category: f.bidang, price: f.tarif, highlight: f.highlight, photo: f.photo, owner: user.email }, id));
-    return addOrder({
-      kind: "mentor", title: "Pendaftaran sebagai mentor", detail: `${f.nama} · ${f.kampus} · bidang ${f.bidang}`,
-      items: [{ label: "Biaya pendaftaran & verifikasi mentor", amount: 25000 }], method: "—", ref: `/mentor/${id}`, listing: { type: "mentors", id },
-    });
+    setDoneId(id);
+    setStep(3);
   };
 
   return (
@@ -198,7 +211,8 @@ function MentorRegForm({ user, onFinish }) {
           <label>Bidang lomba utama
             <select value={f.bidang} onChange={set("bidang")}>{lombaTypes.map((t) => <option key={t}>{t}</option>)}</select>
           </label>
-          <label>Tarif per jam (Rp)<input type="number" required min="10000" value={f.tarif} onChange={set("tarif")} placeholder="50000" /></label>
+          <label>Tarif per jam (Rp)<input type="number" required min="10000" value={f.tarif} onChange={set("tarif")} placeholder="50000" />
+            {Number(f.tarif) > 0 && <span className="muted" style={{ fontSize: ".8rem" }}>Komisi Mentify 10% ({rupiah(cut(Number(f.tarif)))}) · kamu menerima {rupiah(Number(f.tarif) - cut(Number(f.tarif)))} per jam</span>}</label>
           <label>Prestasi unggulan (tampil di profil)<input required value={f.highlight} onChange={set("highlight")} placeholder="Juara 1 LKTI Nasional 2025" /></label>
           <label>Foto profil (opsional, maks. 400 KB)
             <input type="file" accept="image/*" onChange={async (e) => { const d = await readImage(e.target.files[0]); setF((p) => ({ ...p, photo: d })); setPhotoMsg(d ? "Foto siap dipakai ✓" : e.target.files[0] ? "Foto terlalu besar / bukan gambar" : ""); }} />
@@ -231,24 +245,23 @@ function MentorRegForm({ user, onFinish }) {
       )}
 
       {step === 2 && (
-        <form className="form" onSubmit={(e) => { e.preventDefault(); setStep(3); }}>
+        <form className="form" onSubmit={(e) => { e.preventDefault(); submitReg(); }}>
           <div className="warn"><span><Em e="📌" /></span><span>Upload dalam format PDF atau gambar (maks. 5 MB). Ini hanya simulasi — file tidak benar-benar diunggah.</span></div>
           <label>KTM (Kartu Tanda Mahasiswa) <span className="badge">Wajib</span><input type="file" accept="image/*,.pdf" required /></label>
           <label>Sertifikat lomba (minimal 1) <span className="badge">Wajib</span><input type="file" accept="image/*,.pdf" multiple required /></label>
           <label>CV terbaru <span className="badge">Wajib</span><input type="file" accept=".pdf" required /></label>
           <div className="row between" style={{ marginTop: 4 }}>
             <button className="btn secondary" type="button" onClick={() => setStep(1)}>← Kembali</button>
-            <button className="btn" type="submit">Lanjut →</button>
+            <button className="btn" type="submit">Kirim pendaftaran</button>
           </div>
         </form>
       )}
 
       {step === 3 && (
-        <RegPay title="Pendaftaran sebagai mentor" detail={`${f.nama} · ${f.kampus} · bidang ${f.bidang}`}
-          items={[{ label: "Biaya pendaftaran & verifikasi mentor", amount: 25000 }]}
-          onBack={() => setStep(2)} onPaid={onPaid} onFinish={onFinish} finishLabel="Lihat status verifikasi →"
-          note="Profilmu sudah tampil di halaman Mentor dengan lencana “Menunggu verifikasi”. Admin akan memeriksa dokumen dalam 1–3 hari kerja."
-          extraActions={(o) => o.ref && <Link className="btn secondary" href={o.ref}><Em e="👀" /> Lihat profil publik</Link>} />
+        <RegDone title="Pendaftaran terkirim" onFinish={onFinish} finishLabel="Lihat status verifikasi →"
+          note="Daftar mentor gratis. Profilmu sudah tampil di halaman Mentor dengan lencana “Menunggu verifikasi”; admin memeriksa dokumen dalam 1–3 hari kerja. Mentify hanya mengambil komisi 10% dari tiap sesi berbayar.">
+          {doneId && <Link className="btn secondary" href={`/mentor/${doneId}`}><Em e="👀" /> Lihat profil publik</Link>}
+        </RegDone>
       )}
     </div>
   );
@@ -269,13 +282,13 @@ function MentorDashboard() {
       </div>
       <Bars title="Sesi per bulan (6 bulan terakhir)" data={[["Jun", 3], ["Jul", 5], ["Agu", 4], ["Sep", 7], ["Okt", 9], ["Nov", 12]]} note="Data dummy — tren naik 33% dibanding bulan lalu." />
       <div className="card" style={{ gap: 12 }}>
-        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Progres perkembangan mentor</h4>
+        <h4 style={{ fontFamily: "var(--fd)", fontWeight: 600 }}>Progres perkembangan mentor</h4>
         <Goal label="Level Mentor Silver → Gold (sesi)" now={24} target={40} />
         <Goal label="Target pendapatan bulan ini" now={1200000} target={2000000} fmt={(n) => `Rp ${n.toLocaleString("id-ID")}`} />
         <Goal label="Rating minimal 4,8 (ulasan)" now={18} target={25} />
       </div>
       <div className="card">
-        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Sesi mendatang</h4>
+        <h4 style={{ fontFamily: "var(--fd)", fontWeight: 600 }}>Sesi mendatang</h4>
         {dummySessions.map((s, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < dummySessions.length - 1 ? "1px dashed var(--border)" : "none", gap: 12, flexWrap: "wrap" }}>
             <div>
@@ -297,7 +310,7 @@ function TabMentor({ user, updateUser }) {
   return <MentorRegForm user={user} onFinish={() => updateUser({ ...user, mentorStatus: "pending" })} />;
 }
 
-const SELLER_STEPS = ["Info toko", "Verifikasi identitas", "Pembayaran"];
+const SELLER_STEPS = ["Info toko", "Verifikasi identitas", "Selesai"];
 
 function SellerRegForm({ onFinish }) {
   const [step, setStep] = useState(0);
@@ -326,23 +339,20 @@ function SellerRegForm({ onFinish }) {
       )}
 
       {step === 1 && (
-        <form className="form" onSubmit={(e) => { e.preventDefault(); setStep(2); }}>
+        <form className="form" onSubmit={(e) => { e.preventDefault(); addOrder({ kind: "seller", title: "Pendaftaran toko penjual", detail: `Toko ${f.toko} · kategori ${f.kategori}`, items: [{ label: "Pendaftaran toko (gratis)", amount: 0 }], method: "—" }); setStep(2); }}>
           <div className="warn"><span><Em e="📌" /></span><span>Upload dalam format PDF atau gambar (maks. 5 MB). Ini hanya simulasi.</span></div>
           <label>KTP / KTM <span className="badge">Wajib</span><input type="file" accept="image/*,.pdf" required /></label>
           <label>Selfie dengan identitas (opsional)<input type="file" accept="image/*" /></label>
           <div className="row between" style={{ marginTop: 4 }}>
             <button className="btn secondary" type="button" onClick={() => setStep(0)}>← Kembali</button>
-            <button className="btn" type="submit">Lanjut →</button>
+            <button className="btn" type="submit">Kirim pendaftaran</button>
           </div>
         </form>
       )}
 
       {step === 2 && (
-        <RegPay title="Aktivasi toko penjual" detail={`Toko ${f.toko} · kategori ${f.kategori}`}
-          items={[{ label: "Biaya aktivasi toko", amount: 10000 }]}
-          onBack={() => setStep(1)} onFinish={onFinish} finishLabel="Lihat status verifikasi →"
-          onPaid={() => addOrder({ kind: "seller", title: "Aktivasi toko penjual", detail: `Toko ${f.toko} · kategori ${f.kategori}`, items: [{ label: "Biaya aktivasi toko", amount: 10000 }], method: "—" })}
-          note="Toko kamu menunggu verifikasi identitas. Setelah disetujui, kamu bisa menambah produk ke katalog." />
+        <RegDone title="Pendaftaran toko terkirim" onFinish={onFinish} finishLabel="Lihat status verifikasi →"
+          note="Daftar penjual gratis. Setelah identitas diverifikasi, kamu bisa menambah produk ke katalog. Mentify hanya mengambil komisi 10% dari tiap produk yang terjual." />
       )}
     </div>
   );
@@ -385,12 +395,12 @@ function SellerDashboard({ user }) {
 
       <Bars title="Penjualan per produk (unit terjual)" data={products.map((p, k) => [p.title.split(" ").slice(0, 2).join(" "), 12 + ((k * 17) % 31)])} note="Data dummy. Produk baru berstatus 'Menunggu review' sampai disetujui admin." />
       <div className="card" style={{ gap: 12 }}>
-        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Progres penjualan</h4>
+        <h4 style={{ fontFamily: "var(--fd)", fontWeight: 600 }}>Progres penjualan</h4>
         <Goal label="Target omzet bulan ini" now={870000} target={1500000} fmt={(n) => `Rp ${n.toLocaleString("id-ID")}`} />
         <Goal label="Target produk terjual" now={34} target={50} />
       </div>
       <details className="card" style={{ gap: 12 }} open>
-        <summary style={{ cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 600, padding: "4px 0" }}>+ Tambah produk baru</summary>
+        <summary style={{ cursor: "pointer", fontFamily: "var(--fd)", fontWeight: 600, padding: "4px 0" }}>+ Tambah produk baru</summary>
         <form className="form" onSubmit={addProduct} style={{ marginTop: 8 }}>
           <label>Judul produk<input name="title" required placeholder="Template Business Plan..." /></label>
           <label>Kategori<select name="cat">{productCategories.map((c) => <option key={c}>{c}</option>)}</select></label>
@@ -406,7 +416,7 @@ function SellerDashboard({ user }) {
       </details>
 
       <div className="card" style={{ gap: 10 }}>
-        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Produk saya ({products.length})</h4>
+        <h4 style={{ fontFamily: "var(--fd)", fontWeight: 600 }}>Produk saya ({products.length})</h4>
         {products.map((p, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < products.length - 1 ? "1px dashed var(--border)" : "none", gap: 12 }}>
             <div>
@@ -474,8 +484,8 @@ function OrganizerRegForm({ onSubmit }) {
       {step === 2 && (
         <div style={{ display: "grid", gap: 16 }}>
           <div className="summary">
-            <div><span>Biaya listing per lomba</span><strong>Rp 15.000</strong></div>
-            <div><span className="muted" style={{ fontSize: ".82rem" }}>*Dibayar saat menambah lomba pertama</span></div>
+            <div><span>Biaya tayang info lomba</span><strong>Rp 15.000 / bulan</strong></div>
+            <div><span className="muted" style={{ fontSize: ".82rem" }}>*Dibayar saat menambah lomba. Pendaftaran akun gratis.</span></div>
             <div className="total"><span>Total sekarang</span><strong>Rp 0</strong></div>
           </div>
           <div className="warn"><span><Em e="⚠️" /></span><span>Ini adalah simulasi. Tidak ada uang yang benar-benar ditagih.</span></div>
@@ -498,6 +508,7 @@ function LombaWizard({ user }) {
   const [step, setStep] = useState(0);
   const [f, setF] = useState(L0);
   const [posterMsg, setPosterMsg] = useState("");
+  const [months, setMonths] = useState(1);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
   const toggleLevel = (l) => setF({ ...f, levels: f.levels.includes(l) ? f.levels.filter((x) => x !== l) : [...f.levels, l] });
   const reset = () => { setF(L0); setStep(0); setPosterMsg(""); };
@@ -507,7 +518,7 @@ function LombaWizard({ user }) {
     addListing("lomba", makeLomba({ ...f, organizer: user.name, levels: f.levels.length ? f.levels : ["Umum"], owner: user.email }, id));
     return addOrder({
       kind: "lomba", title: `Info lomba: ${f.title}`, detail: `${f.type} · deadline ${f.end}`,
-      items: [{ label: "Biaya listing lomba", amount: 15000 }], method: "—", ref: `/lomba/${id}`, listing: { type: "lomba", id },
+      items: [{ label: `Biaya tayang info lomba × ${months} bulan`, amount: LOMBA_FEE * months }], method: "—", ref: `/lomba/${id}`, listing: { type: "lomba", id },
     });
   };
 
@@ -558,11 +569,18 @@ function LombaWizard({ user }) {
         </form>
       )}
       {step === 2 && (
-        <RegPay title={`Info lomba: ${f.title}`} detail={`${f.type} · deadline ${f.end}`}
-          items={[{ label: "Biaya listing lomba", amount: 15000 }]}
+        <>
+        <label className="months">Lama tayang
+          <select value={months} onChange={(e) => setMonths(Number(e.target.value))}>
+            {[1, 2, 3, 6, 12].map((n) => <option key={n} value={n}>{n} bulan · {rupiah(LOMBA_FEE * n)}</option>)}
+          </select>
+        </label>
+        <RegPay title={`Info lomba: ${f.title}`} detail={`${f.type} · tayang ${months} bulan`}
+          items={[{ label: `Biaya tayang info lomba × ${months} bulan`, amount: LOMBA_FEE * months }]}
           onBack={() => setStep(1)} onPaid={onPaid} onFinish={reset} finishLabel="Tambah lomba lain"
           note="Info lombamu sudah tampil di halaman Info Lomba dengan lencana “Menunggu review”. Admin memverifikasi administrasi dalam 1–3 hari kerja."
           extraActions={(o) => o.ref && <Link className="btn secondary" href={o.ref}><Em e="👀" /> Lihat di Info Lomba</Link>} />
+        </>
       )}
     </div>
   );
@@ -588,17 +606,17 @@ function OrganizerDashboard({ user }) {
 
       <Bars title="Pendaftar per lomba" data={lombas.map((l, k) => [l.title.split(" ")[0], 80 + ((k * 53) % 170)])} note="Data dummy. Info lomba baru tampil di halaman Info Lomba setelah verifikasi dan pembayaran listing." />
       <div className="card" style={{ gap: 12 }}>
-        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Progres pendaftaran</h4>
+        <h4 style={{ fontFamily: "var(--fd)", fontWeight: 600 }}>Progres pendaftaran</h4>
         <Goal label="Target pendaftar" now={312} target={500} />
         <Goal label="Tayangan info lomba" now={4230} target={6000} />
       </div>
       <details className="card" style={{ gap: 12 }} open>
-        <summary style={{ cursor: "pointer", fontFamily: "var(--font-display)", fontWeight: 600, padding: "4px 0" }}>+ Daftarkan info lomba baru</summary>
+        <summary style={{ cursor: "pointer", fontFamily: "var(--fd)", fontWeight: 600, padding: "4px 0" }}>+ Daftarkan info lomba baru</summary>
         <LombaWizard user={user} />
       </details>
 
       <div className="card" style={{ gap: 10 }}>
-        <h4 style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>Lomba saya ({lombas.length})</h4>
+        <h4 style={{ fontFamily: "var(--fd)", fontWeight: 600 }}>Lomba saya ({lombas.length})</h4>
         {lombas.map((l, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < lombas.length - 1 ? "1px dashed var(--border)" : "none", gap: 12, flexWrap: "wrap" }}>
             <div>

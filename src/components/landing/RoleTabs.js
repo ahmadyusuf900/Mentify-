@@ -26,7 +26,7 @@ const ROLES = [
       "Pasang info lomba lengkap dengan poster, jadwal, hadiah, dan tautan resmi",
       "Lomba yang lewat tenggat otomatis ditandai tutup",
       "Jual template, esai, dan materi dengan harga yang kamu tentukan",
-      "Pengguna premium ikut mengakses produk lewat kuota bulanan",
+      "Komisi 10% hanya dipotong dari penjualan yang berhasil",
     ], cta: ["/dashboard", "Buka dashboard"] },
 ];
 

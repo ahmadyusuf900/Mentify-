@@ -62,6 +62,7 @@ export default function LombaDetail({ id }) {
         <div className="dp-body">
           <div className="row">
             <span className="badge">{l.type}</span>
+            {l.demo && <span className="badge demo">Contoh lengkap</span>}
             {closed
               ? <span className="badge gray">Pendaftaran ditutup</span>
               : <span className="badge pink">{d !== null ? `Sisa ${d} hari` : "Dibuka"}</span>}

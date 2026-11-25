@@ -61,6 +61,17 @@ function build([title, organizer, type, levels, fee, mode, province, start, end,
 }
 export const lomba = rows.map((r, i) => build(r, i + 1));
 
+// Contoh lomba lengkap untuk demo (poster, jadwal, hadiah, guidebook PDF asli di public/demo).
+lomba.push(build(["Mentify Demo Cup 2026: Lomba Esai Inovasi","Mentify Student Community","Esai/LKTI",["SMA","Mahasiswa"],0,"Online","DKI Jakarta","2026-11-01","2026-12-31",2140,96], 16, {
+  demo: true, poster: "/lomba/lomba-16.svg",
+  desc: "Lomba esai terbuka untuk pelajar SMA dan mahasiswa dengan tema inovasi sederhana untuk kampus dan sekolah yang lebih berkelanjutan. Esai 1.000-1.500 kata, dinilai oleh praktisi dan akademisi. Gratis, online, dan semua peserta mendapat e-sertifikat.",
+  prizes: ["Juara 1: Rp3.000.000 + sertifikat", "Juara 2: Rp2.000.000 + sertifikat", "Juara 3: Rp1.000.000 + sertifikat", "E-sertifikat untuk seluruh peserta"],
+  requirements: ["Esai orisinal 1.000-1.500 kata, format PDF", "Huruf 12 pt, spasi 1,5, menyertakan daftar pustaka", "Individu, SMA/sederajat atau mahasiswa aktif"],
+  timeline: [["Pendaftaran dibuka", "2026-11-01"], ["Pendaftaran ditutup", "2026-12-31"], ["Seleksi dan penjurian", "2027-01-10"], ["Pengumuman pemenang", "2027-01-21"]],
+  contact: "@mentify.id",
+  links: [["Daftar & unggah esai", "https://example.com/mentify-demo-cup"], ["Guidebook (PDF)", "/demo/guidebook-mentify-demo-cup.pdf"], ["Instagram penyelenggara", "https://instagram.com/mentify.id"]],
+}));
+
 // Dipanggil dari dashboard penyelenggara. f: {title, organizer, type, levels, fee, mode, province, start, end, desc, link, poster, owner}
 export function makeLomba(f, id) {
   const row = [f.title, f.organizer, f.type, f.levels, Number(f.fee) || 0, f.mode, f.province, f.start, f.end, 0, 0];

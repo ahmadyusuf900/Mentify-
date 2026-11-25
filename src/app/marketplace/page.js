@@ -1,10 +1,9 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { productCategories, productIcons, productLombaTypes, FREE_QUOTA } from "@/data/products";
+import { productCategories, productIcons, productLombaTypes } from "@/data/products";
 import { useUser } from "@/lib/auth";
 import { useCatalog } from "@/lib/listings";
-import { useQuota } from "@/lib/quota";
 import ProductCard from "@/components/ProductCard";
 import Empty from "@/components/Empty";
 import PageHero from "@/components/PageHero";
@@ -16,8 +15,6 @@ const INIT = { q: "", cat: "", price: "", rating: "", lomba: "", promo: false, s
 export default function Marketplace() {
   const { products } = useCatalog();
   const { user } = useUser();
-  const { left } = useQuota();
-  const premium = user?.plan === "premium";
   const [f, setF] = useState(INIT);
   const [shown, setShown] = useState(9);
   const [showF, setShowF] = useState(false);
@@ -59,13 +56,7 @@ export default function Marketplace() {
       </PageHero>
 
       <div className="container section">
-        <div className="mk-banner">
-          {premium ? (
-            <span><Em e="⭐" /> <strong>Akun premium:</strong> sisa kuota akses gratis bulan ini {left} dari {FREE_QUOTA} produk.</span>
-          ) : (
-            <span>Akun <strong>premium</strong> bisa mengakses {FREE_QUOTA} produk gratis tiap bulan. <Link href="/login"><u>Masuk atau upgrade</u></Link></span>
-          )}
-        </div>
+        <div className="mk-banner"><span><Em e="🛒" /> Beli sekali, <strong>tanpa biaya tambahan</strong>. Unduh file langsung setelah pembayaran.</span></div>
 
         <div className="mk-layout">
           <aside>
@@ -101,7 +92,7 @@ export default function Marketplace() {
               </select>
             </div>
             {list.length ? (
-              <div className="mk-grid">{list.slice(0, shown).map((p) => <ProductCard key={p.id} p={p} free={premium && left > 0} />)}</div>
+              <div className="mk-grid">{list.slice(0, shown).map((p) => <ProductCard key={p.id} p={p} />)}</div>
             ) : <Empty />}
             {shown < list.length && (
               <div style={{ textAlign: "center", marginTop: 24 }}>

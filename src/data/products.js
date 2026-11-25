@@ -1,5 +1,3 @@
-export const FREE_QUOTA = 3; // batas akses gratis akun premium per bulan
-export const PRODUCT_FEE = 1000;
 export const PROMO = { code: "MENTIFY10", pct: 10 };
 
 // [judul, kategori, harga, harga coret (0 = tidak ada), penjual, rating, ulasan, terjual, format, halaman, ukuran, jenis lomba]
@@ -50,6 +48,14 @@ function build([title, category, price, oldPrice, seller, rating, reviewCount, s
   ...extra,
 }); }
 export const products = rows.map((r, i) => build(r, i));
+
+// Contoh produk lengkap untuk demo: file PDF asli bisa diunduh (public/demo).
+products.push(build(["Panduan Esai LKTI: 6 Langkah dari Nol","Materi Lomba",25000,35000,"Kirana Demo",5,0,0,"PDF",4,"6 KB","Esai/LKTI"], 12, {
+  demo: true, cover: "/produk/produk-13.svg", file: "/demo/panduan-esai-lkti-6-langkah.pdf", id: 13, code: "PRD-26-013",
+  desc: "Panduan ringkas menyusun esai lomba karya tulis dalam 6 langkah: memilih topik, merumuskan masalah, menyusun kerangka, menguatkan argumen, menyunting, dan mengecek kriteria juri. Dilengkapi tabel kerangka dan checklist akhir sebelum submit. File PDF ini asli dan bisa diunduh setelah pembelian.",
+  includes: ["6 langkah menulis esai LKTI", "Tabel kerangka esai", "Checklist akhir sebelum submit", "Pembaruan gratis"],
+  reviews: [],
+}));
 
 // Dipanggil dari dashboard penjual. f: {title, category, price, format, lombaType, desc, cover, seller, owner}
 export function makeProduct(f, id) {

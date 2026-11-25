@@ -22,7 +22,7 @@ const SLIDES = [
     thought: "Pengen lihat contoh esai juara, tapi nggak ada yang mau share…",
     chats: ["Template bagus itu mahal banget", "Mau belajar dari yang menang"],
     title: "Materi langsung dari para juara",
-    points: ["Esai juara, template, dan materi siap unduh", "Akun premium dapat kuota produk gratis tiap bulan", "Pembayaran QRIS, transfer, dan e-wallet"],
+    points: ["Esai juara, template, dan materi siap unduh", "Harga jelas, tanpa biaya tambahan untuk pembeli", "Pembayaran QRIS, transfer, dan e-wallet"],
     cta: ["/marketplace", "Buka marketplace"] },
   { role: "Calon mentor", ac: "#B79AE8", hair: "#2b3a67", outfit: "#B79AE8", style: "bun",
     thought: "Aku pernah juara, tapi bingung gimana cara berbagi ilmunya…",

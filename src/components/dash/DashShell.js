@@ -77,7 +77,6 @@ function Rail({ user, orders }) {
       <div className="ds-me">
         <div className="ds-av">{user.name?.[0]?.toUpperCase() ?? "U"}</div>
         <div><strong>{user.name}</strong><small>{user.email}</small></div>
-        <span className={`badge ${user.plan === "premium" ? "pink" : ""}`}>{user.plan === "premium" ? <><Em e="⭐" /> Premium</> : "Free"}</span>
       </div>
       <Calendar orders={orders} />
       <section className="ds-box">
