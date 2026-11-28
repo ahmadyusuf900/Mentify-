@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import MotionProvider from "@/components/MotionProvider";
 // Font dibundel di src/fonts (tanpa download Google Fonts), jadi selalu tampil sama di semua perangkat.
 const display = localFont({
   src: [{ path: "../fonts/bricolage-grotesque-latin-wght-normal.woff2", weight: "200 800", style: "normal" }],
@@ -18,7 +19,7 @@ export const viewport = { width: "device-width", initialScale: 1 };
 export default function RootLayout({ children }) {
   return (
     <html lang="id" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
-      <body><Navbar /><main>{children}</main><Footer /></body>
+      <body><MotionProvider><Navbar /><main>{children}</main><Footer /></MotionProvider></body>
     </html>
   );
 }

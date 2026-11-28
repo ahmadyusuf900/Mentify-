@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { isClosed, daysLeft, fmtDate, feeText } from "@/data/lomba";
+import { isClosed, daysLeft, fmtDate, feeText, regLink, tlDate } from "@/data/lomba";
 import { useNow } from "@/lib/useNow";
 import { useCatalog } from "@/lib/listings";
 import Poster from "./Poster";
+import Lightbox from "./Lightbox";
 import LombaCard from "./LombaCard";
 import { Em, Icon, emo, Stars } from "@/components/Icon";
 
@@ -49,6 +50,8 @@ export default function LombaDetail({ id }) {
     ["Kategori", l.type],
     ["Lokasi", l.province],
     ["Mulai", fmtDate(l.start)],
+    ...(l.venue ? [["Tempat", l.venue]] : []),
+    ...(l.feeNote ? [["Rincian biaya", l.feeNote]] : []),
   ];
 
   return (
@@ -57,7 +60,11 @@ export default function LombaDetail({ id }) {
 
       {/* Kartu profil */}
       <section className="card dprofile">
-        <div className="dp-poster"><Poster l={l} closed={closed} /></div>
+        <div className="dp-poster">
+          {/\.(jpe?g|png)$/i.test(l.poster || "") ? (
+            <Lightbox src={l.poster} alt={`Poster ${l.title}`}><Poster l={l} closed={closed} /></Lightbox>
+          ) : <Poster l={l} closed={closed} />}
+        </div>
 
         <div className="dp-body">
           <div className="row">
@@ -90,7 +97,7 @@ export default function LombaDetail({ id }) {
             {closed ? (
               <button className="btn" disabled>Pendaftaran ditutup</button>
             ) : (
-              <a className="btn" href={l.links[0][1]} target="_blank" rel="noopener noreferrer">Daftar sekarang</a>
+              <a className="btn" href={regLink(l)} target="_blank" rel="noopener noreferrer">Daftar sekarang</a>
             )}
             <button className="btn secondary" onClick={() => setLiked(!liked)} aria-pressed={liked}>
               {liked ? <><Em e="❤" /> Disukai</> : <><Em e="🤍" /> Suka</>}
@@ -121,7 +128,17 @@ export default function LombaDetail({ id }) {
         <div className="dpanel" role="tabpanel">
           {tab === "tentang" && (
             <>
+              {l.theme && <p className="lm-theme">&ldquo;{l.theme}&rdquo;</p>}
               <p>{l.desc}</p>
+              {l.subthemes?.length > 0 && (
+                <>
+                  <p className="muted" style={{ margin: "14px 0 6px" }}>Subtema</p>
+                  <ul className="check-grid">
+                    {l.subthemes.map((t) => <li key={t}><span aria-hidden="true"><Icon name="check" /></span>{t}</li>)}
+                  </ul>
+                </>
+              )}
+              {l.note && <p className="notice" style={{ marginTop: 14 }}>{l.note}</p>}
               <div className="info-list">
                 {details.map(([k, v]) => (
                   <div key={k}><span>{k}</span><strong>{v}</strong></div>
@@ -132,13 +149,13 @@ export default function LombaDetail({ id }) {
 
           {tab === "jadwal" && (
             <ol className="tl-h">
-              {l.timeline.map(([t, date], i) => {
+              {l.timeline.map(([t, date, label], i) => {
                 const done = nextStep === -1 ? !!now : i < nextStep;
                 return (
                   <li key={t} className={`${done ? "done" : ""} ${i === nextStep ? "now" : ""}`}>
                     <span className="tl-no">{done ? <Icon name="check" /> : i + 1}</span>
                     <strong>{t}</strong>
-                    <span className="muted">{fmtDate(date)}</span>
+                    <span className="muted">{tlDate([t, date, label])}</span>
                     {i === nextStep && <span className="badge pink">Berikutnya</span>}
                   </li>
                 );
@@ -173,7 +190,11 @@ export default function LombaDetail({ id }) {
 
           {tab === "kontak" && (
             <>
-              <p>Kontak panitia: <strong>Instagram {l.contact}</strong></p>
+              {l.contacts?.length ? (
+                <ul className="lm-contacts">
+                  {l.contacts.map(([k, v], i) => <li key={k + i}><span>{k}</span><strong>{v}</strong></li>)}
+                </ul>
+              ) : <p>Kontak panitia: <strong>Instagram {l.contact}</strong></p>}
               <p className="muted" style={{ margin: "12px 0 8px" }}>Sumber dan tautan resmi</p>
               <div className="link-btns">
                 {l.links.map(([name, url]) => (

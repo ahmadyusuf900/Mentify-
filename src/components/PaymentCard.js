@@ -6,6 +6,7 @@ import { nextInvoiceNo } from "@/lib/orders";
 import { useUser } from "@/lib/auth";
 import { PAYMENTS } from "@/data/mentors";
 import Receipt from "@/components/Receipt";
+import PayModal from "@/components/PayModal";
 import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const hash = (str) => { let h = 2166136261; for (const c of str) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
@@ -58,6 +59,7 @@ export default function PaymentCard({ title, detail, items, method, onBack, onPa
   const [stage, setStage] = useState("review");
   const [order, setOrder] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [modal, setModal] = useState(true);
   const [info] = useState(() => ({ no: nextInvoiceNo(), exp: new Date(Date.now() + 24 * 3600 * 1000) }));
   const timer = useRef(null);
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -69,7 +71,7 @@ export default function PaymentCard({ title, detail, items, method, onBack, onPa
 
   const pay = () => {
     setStage("processing");
-    timer.current = setTimeout(() => { setOrder(onPay()); setStage("paid"); }, 1500);
+    timer.current = setTimeout(() => { setOrder(onPay()); setStage("paid"); setModal(true); }, 1500);
   };
   const copy = async () => { try { await navigator.clipboard.writeText(va.replace(/ /g, "")); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {} };
 
@@ -85,6 +87,7 @@ export default function PaymentCard({ title, detail, items, method, onBack, onPa
         <div className="pc-success">
           <h3 style={{ textAlign: "center" }}>{success.title || "Pembayaran berhasil"}</h3>
           <p className="muted" style={{ textAlign: "center" }}>{success.note}</p>
+          {modal && order && <PayModal o={order} title={success.title} note={success.note} actions={success.actions?.(order)} onClose={() => setModal(false)} />}
           <Receipt o={order} />
           <div className="row" style={{ gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
             {success.actions?.(order)}

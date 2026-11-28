@@ -42,30 +42,52 @@ const fmtDate = (t) => new Date(t).toLocaleDateString("id-ID", { day: "numeric",
 
 function Calendar({ orders }) {
   const [off, setOff] = useState(0);
+  const [sel, setSel] = useState(null); // tanggal yang dipilih { y, m, d }
   const now = new Date();
   const base = new Date(now.getFullYear(), now.getMonth() + off, 1);
   const y = base.getFullYear(), m = base.getMonth();
   const first = (base.getDay() + 6) % 7; // Senin = 0
   const days = new Date(y, m + 1, 0).getDate();
-  const marks = new Set(orders.map((o) => { const d = new Date(o.ts); return d.getFullYear() === y && d.getMonth() === m ? d.getDate() : 0; }));
+  const byDay = {};
+  orders.forEach((o) => { const d = new Date(o.ts); if (d.getFullYear() === y && d.getMonth() === m) (byDay[d.getDate()] ||= []).push(o); });
   const cells = [...Array(first).fill(null), ...Array.from({ length: days }, (_, i) => i + 1)];
+  const picked = sel && sel.y === y && sel.m === m ? sel.d : null;
+  const list = picked ? byDay[picked] || [] : [];
+  const pickedLabel = picked ? new Date(y, m, picked).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) : "";
   return (
     <section className="ds-box">
       <div className="ds-box-h">
         <h3>Kalender</h3>
         <span className="ds-cal-nav">
-          <button type="button" onClick={() => setOff(off - 1)} aria-label="Bulan sebelumnya">‹</button>
+          <button type="button" onClick={() => { setOff(off - 1); setSel(null); }} aria-label="Bulan sebelumnya">‹</button>
           <strong>{base.toLocaleDateString("id-ID", { month: "long", year: "numeric" })}</strong>
-          <button type="button" onClick={() => setOff(off + 1)} aria-label="Bulan berikutnya">›</button>
+          <button type="button" onClick={() => { setOff(off + 1); setSel(null); }} aria-label="Bulan berikutnya">›</button>
         </span>
       </div>
       <div className="ds-cal">
         {["S", "S", "R", "K", "J", "S", "M"].map((d, i) => <b key={i}>{d}</b>)}
-        {cells.map((d, i) => (
-          <span key={i} className={`${d && off === 0 && d === now.getDate() ? "today" : ""} ${d && marks.has(d) ? "mark" : ""}`}>{d}</span>
-        ))}
+        {cells.map((d, i) => d ? (
+          <button key={i} type="button" onClick={() => setSel(picked === d ? null : { y, m, d })} aria-pressed={picked === d}
+            aria-label={`${d} ${base.toLocaleDateString("id-ID", { month: "long" })}${byDay[d] ? `, ${byDay[d].length} aktivitas` : ""}`}
+            className={`${off === 0 && d === now.getDate() ? "today" : ""} ${byDay[d] ? "mark" : ""} ${picked === d ? "sel" : ""}`}>{d}</button>
+        ) : <span key={i} />)}
       </div>
-      <p className="muted ds-hint"><i /> Titik = ada aktivitas pada tanggal itu</p>
+      {picked ? (
+        <div className="ds-day" role="status">
+          <strong>{pickedLabel}</strong>
+          {list.length === 0 ? <p className="muted">Tidak ada aktivitas di tanggal ini.</p> : (
+            <ul className="ds-list">
+              {list.map((o) => { const k = KINDS[o.kind]; return (
+                <li key={o.id}>
+                  <span className="ds-li-ico"><Em e={k.icon} /></span>
+                  <div><strong>{o.title}</strong><small>{new Date(o.ts).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} · {k.flow[o.step]}</small></div>
+                </li>); })}
+            </ul>
+          )}
+        </div>
+      ) : (
+        <p className="muted ds-hint"><i /> Titik = ada aktivitas. Ketuk tanggalnya untuk melihat detail.</p>
+      )}
     </section>
   );
 }
@@ -88,7 +110,7 @@ function Rail({ user, orders }) {
             return (
               <li key={o.id}>
                 <span className="ds-li-ico"><Em e={k.icon} /></span>
-                <div><strong>{o.title}</strong><small>{k.flow[o.step]}</small></div>
+                <div><strong>{o.title}</strong><small>{fmtDate(o.ts)} · {k.flow[o.step]}</small></div>
               </li>
             );
           })}

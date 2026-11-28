@@ -1,4 +1,6 @@
 // [judul, penyelenggara, jenis, peserta, biaya, mode, provinsi, mulai, tutup, dilihat, suka]
+import { EXTRA } from "./lomba-extra";
+
 const rows = [
  ["LKTI Nasional Inovasi Hijau","Universitas Diponegoro","Esai/LKTI",["Mahasiswa"],75000,"Online","Jawa Tengah","2026-10-01","2026-12-10",1240,38],
  ["National Business Case Competition","FEB Universitas Indonesia","Business Case",["Mahasiswa"],150000,"Offline","DKI Jakarta","2026-09-20","2026-11-08",2310,64],
@@ -43,7 +45,7 @@ function build([title, organizer, type, levels, fee, mode, province, start, end,
   return {
     id, title, organizer, type, levels, fee, mode, province, start, end, views, likes,
     deadline: end,
-    level: levels.join(", "),
+    level: levels.length ? levels.join(", ") : "Belum dicantumkan",
     poster: `/lomba/lomba-${id}.svg`, // GANTI GAMBAR: taruh file di public/lomba lalu ubah path ini (mis. "/lomba/poster-lkti.jpg"), atau timpa file dengan nama sama
     desc: `${title} adalah kompetisi ${type.toLowerCase()} yang diselenggarakan oleh ${organizer}. Terbuka untuk ${levels.join(", ").toLowerCase()} dari seluruh Indonesia. Peserta akan melewati tahap seleksi karya dan penjurian oleh praktisi serta akademisi di bidangnya.`,
     prizes: ["Juara 1: Rp5.000.000 + piala + sertifikat", "Juara 2: Rp3.500.000 + sertifikat", "Juara 3: Rp2.500.000 + sertifikat", "E-sertifikat untuk seluruh peserta"],
@@ -72,6 +74,12 @@ lomba.push(build(["Mentify Demo Cup 2026: Lomba Esai Inovasi","Mentify Student C
   links: [["Daftar & unggah esai", "https://example.com/mentify-demo-cup"], ["Guidebook (PDF)", "/demo/guidebook-mentify-demo-cup.pdf"], ["Instagram penyelenggara", "https://instagram.com/mentify.id"]],
 }));
 
+// Info lomba tambahan dari "Database Informasi Lomba Mentify" (id 17 dst., poster di public/lomba/lomba-<id>.jpg).
+EXTRA.forEach(([row, extra], i) => {
+  const id = 17 + i;
+  lomba.push(build(row, id, { poster: `/lomba/lomba-${id}.jpg`, ...extra }));
+});
+
 // Dipanggil dari dashboard penyelenggara. f: {title, organizer, type, levels, fee, mode, province, start, end, desc, link, poster, owner}
 export function makeLomba(f, id) {
   const row = [f.title, f.organizer, f.type, f.levels, Number(f.fee) || 0, f.mode, f.province, f.start, f.end, 0, 0];
@@ -83,12 +91,16 @@ export function makeLomba(f, id) {
   });
 }
 
-export const lombaTypes = [...new Set(rows.map((r) => r[2]))];
+export const lombaTypes = [...new Set([...rows.map((r) => r[2]), ...EXTRA.map(([r]) => r[2])])];
 export const lombaLevels = ["SMP", "SMA", "Mahasiswa", "Umum"];
-export const lombaProvinces = [...new Set(rows.map((r) => r[6]))];
+export const lombaProvinces = [...new Set([...rows.map((r) => r[6]), ...EXTRA.map(([r]) => r[6])])];
 
 // Tutup bila tanggal tutup sudah lewat. `now` berasal dari useNow().
 export const isClosed = (l, now) => !!now && new Date(l.end + "T23:59:59") < now;
 export const daysLeft = (l, now) => (now ? Math.ceil((new Date(l.end + "T23:59:59") - now) / 86400000) : null);
 export const fmtDate = (s) => new Date(s + "T12:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-export const feeText = (l) => (l.fee === 0 ? "Gratis" : "Rp" + l.fee.toLocaleString("id-ID"));
+export const feeText = (l) => l.feeLabel || (l.fee === 0 ? "Gratis" : l.fee == null ? "Belum dicantumkan" : "Rp" + l.fee.toLocaleString("id-ID"));
+// Tautan untuk tombol "Daftar sekarang": pilih tautan pendaftaran, bila tidak ada pakai yang pertama.
+export const regLink = (l) => (l.links.find(([n]) => /daftar|registrasi/i.test(n)) || l.links[0])[1];
+// Teks tanggal jadwal: pakai teks rentang bila ada, kalau tidak format dari tanggal.
+export const tlDate = ([, d, label]) => label || fmtDate(d);

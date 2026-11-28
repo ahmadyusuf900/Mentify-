@@ -3,6 +3,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import MentorAvatar from "@/components/MentorAvatar";
 import Poster from "@/components/Poster";
+import { feeText } from "@/data/lomba";
 import ProductCover from "@/components/ProductCover";
 
 // ── helpers ────────────────────────────────────────────────────────────────
@@ -67,7 +68,7 @@ function LombaCard({ item }) {
         <div className="sc-meta">
           <span className="muted">Deadline: {fmtDate(item.end)}</span>
           <span className="sc-price">
-            {item.fee === 0 ? "Gratis" : fmtPrice(item.fee)}
+            {feeText(item)}
           </span>
         </div>
         <span className="sc-cta">Lihat lomba →</span>

@@ -26,7 +26,7 @@ export default function Login() {
   const [show, setShow] = useState(false);
   const [remember, setRemember] = useState(true);
   const [note, setNote] = useState("");
-  const { login } = useUser();
+  const { user: me, ready, login, logout } = useUser();
   const router = useRouter();
   const cur = ROLES.find((r) => r.id === role);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
@@ -48,6 +48,23 @@ export default function Login() {
     });
     router.push(`/dashboard?tab=${cur.tab}`);
   };
+
+  if (ready && me) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card" style={{ gridTemplateColumns: "1fr", maxWidth: 520 }}>
+          <div className="auth-form" style={{ textAlign: "center", display: "grid", gap: 14, padding: 28 }}>
+            <h1 style={{ fontFamily: "var(--fd)" }}>Kamu sudah masuk</h1>
+            <p className="muted">Masuk sebagai <strong>{me.name}</strong> ({me.email}). Untuk ganti akun atau peran, keluar dulu.</p>
+            <div className="row" style={{ justifyContent: "center" }}>
+              <button className="btn" onClick={() => router.push("/dashboard")}>Ke dashboard</button>
+              <button className="btn secondary" onClick={logout}>Keluar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-page">

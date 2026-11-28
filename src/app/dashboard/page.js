@@ -108,7 +108,7 @@ function StatCard({ icon, label, value }) {
 function TabCariMentor() {
   return (
     <div style={{ display: "grid", gap: 16 }}>
-      <div className="card mentor-cta" style={{ background: "var(--sky)" }}>
+      <div className="card mentor-cta">
         <div>
           <h3>Temukan mentor yang tepat</h3>
           <p className="muted">Lebih dari 200 mentor mahasiswa siap membimbing kamu meraih juara lomba.</p>
@@ -706,7 +706,7 @@ function TabRiwayat() {
    MAIN DASHBOARD
 ═══════════════════════════════════════ */
 export default function Dashboard() {
-  const { user, login, logout } = useUser();
+  const { user, ready, login, logout } = useUser();
   const orders = useOrders();
   const [tab, setTab] = useState("home");
   useEffect(() => {
@@ -714,6 +714,7 @@ export default function Dashboard() {
     if (t) setTab(t);
   }, []);
 
+  if (!ready) return <div className="container section"><p className="muted">Memuat dashboard…</p></div>;
   if (!user) {
     return (
       <div className="container section">

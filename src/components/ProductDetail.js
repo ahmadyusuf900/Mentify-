@@ -11,6 +11,7 @@ import PaymentCard from "./PaymentCard";
 import ReviewBox from "./ReviewBox";
 import ProductCover from "./ProductCover";
 import ProductCard from "./ProductCard";
+import Need from "./Need";
 import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const TABS = [["desk", "Deskripsi"], ["isi", "Isi produk"], ["ulasan", "Ulasan"]];
@@ -36,7 +37,14 @@ export default function ProductDetail({ id }) {
   const discount = promoOk ? Math.round((p.price * PROMO.pct) / 100) : 0;
   const total = p.price - discount;
   const emailOk = /\S+@\S+\.\S+/.test(email);
-  const canSubmit = agree && emailOk && (!pay.sub || paySub);
+  const checks = [
+    [emailOk, email ? "Email belum valid. Pakai format nama@email.com" : "Isi email penerima file"],
+    [!pay.sub || !!paySub, `Pilih ${payKey === "E-Wallet" ? "e-wallet" : "bank"} untuk pembayaran`],
+    [agree, "Centang persetujuan syarat dan ketentuan"],
+  ];
+  const missing = checks.filter(([ok]) => !ok);
+  const [tried, setTried] = useState(false);
+  const goPay = () => { if (missing.length) { setTried(true); document.getElementById("need-box")?.scrollIntoView({ behavior: "smooth", block: "center" }); } else setStage("pay"); };
   const related = products.filter((x) => x.category === p.category && x.id !== p.id).slice(0, 4);
   const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
 
@@ -188,7 +196,8 @@ export default function ProductDetail({ id }) {
                 <label className="agree"><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                   <span>Saya menyetujui syarat dan ketentuan pembelian produk digital.</span></label>
 
-                <button className="btn" disabled={!canSubmit} onClick={() => setStage("pay")}>
+                <Need checks={checks} tried={tried} />
+                <button className="btn" onClick={goPay}>
                   Lanjut ke pembayaran · {rupiah(total)}
                 </button>
               </>

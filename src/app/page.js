@@ -244,7 +244,7 @@ export default function Home() {
               <div className="cta" style={{ marginTop: 18 }}><Link className="btn" href="/login">Gabung Mentify</Link></div>
             </div>
             <div className="tk-vals">
-              {[["🤝", "Terpercaya", "Mentor diverifikasi lebih dulu.", "mint"], ["🔎", "Transparan", "Biaya terlihat sebelum bayar.", "yellow"], ["🌱", "Terjangkau", "Ada materi gratis tiap bulan.", "sky"], ["💬", "Responsif", "Admin siap membantu.", "rose"]].map(([i, t, d, c]) => (
+              {[["🤝", "Terpercaya", "Mentor diverifikasi lebih dulu.", "mint"], ["🔎", "Transparan", "Biaya terlihat sebelum bayar.", "yellow"], ["🌱", "Terjangkau", "Pendaftaran gratis, tanpa biaya tersembunyi.", "sky"], ["💬", "Responsif", "Admin siap membantu.", "rose"]].map(([i, t, d, c]) => (
                 <article key={t} className={`tk-card tk-${c}`}><span className="ico" aria-hidden="true"><Em e={i} /></span><h3>{t}</h3><p>{d}</p></article>
               ))}
             </div>

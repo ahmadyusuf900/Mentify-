@@ -10,6 +10,7 @@ import { useReviews, mergeRating } from "@/lib/reviews";
 import PaymentCard from "./PaymentCard";
 import MentorAvatar from "./MentorAvatar";
 import MentorCard from "./MentorCard";
+import Need from "./Need";
 import { Em, Icon, emo, Stars } from "@/components/Icon";
 
 const TABS = [["tentang", "Tentang"], ["prestasi", "Prestasi"], ["cv", "CV & verifikasi"], ["ulasan", "Ulasan"]];
@@ -51,7 +52,15 @@ export default function MentorBooking({ id }) {
   const dateObj = dates.find((d) => ymd(d) === date);
   const dateLabel = dateObj ? dateObj.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" }) : "";
   const booked = (d, idx) => (m.id * 7 + d.getDate() * 3 + idx * 5) % 6 === 0; // contoh slot terisi
-  const canSubmit = date && slot && agree && (!pay.sub || paySub);
+  const checks = [
+    [!!date, "Pilih tanggal sesi"],
+    [!!slot, date ? "Pilih jam sesi" : "Pilih jam sesi (setelah tanggal)"],
+    [!pay.sub || !!paySub, `Pilih ${pay.sub ? (payKey === "E-Wallet" ? "e-wallet" : "bank") : "metode"} untuk pembayaran`],
+    [agree, "Centang persetujuan syarat dan ketentuan"],
+  ];
+  const missing = checks.filter(([ok]) => !ok).map(([, t]) => t);
+  const [tried, setTried] = useState(false);
+  const goPay = () => { if (missing.length) { setTried(true); document.getElementById("need-box")?.scrollIntoView({ behavior: "smooth", block: "center" }); } else setStage("pay"); };
   const related = mentors.filter((x) => x.category === m.category && x.id !== m.id).slice(0, 4);
 
   const methodStr = `${payKey}${paySub ? ` – ${paySub}` : ""}`;
@@ -232,7 +241,8 @@ export default function MentorBooking({ id }) {
                 <label className="agree"><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                   <span>Saya menyetujui syarat dan ketentuan serta kebijakan penjadwalan ulang.</span></label>
 
-                <button className="btn" disabled={!canSubmit} onClick={() => setStage("pay")}>Lanjut ke pembayaran · {rupiah(total)}</button>
+                <Need checks={checks} tried={tried} />
+                <button className="btn" onClick={goPay}>Lanjut ke pembayaran · {rupiah(total)}</button>
               </>
             )}
           </section>
